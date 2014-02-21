@@ -885,7 +885,7 @@ namespace hpx { namespace parcelset { namespace policies { namespace ipc
                 }
 
                 while (!mq.timed_send(&msg, sizeof(msg), 0,
-                    boost::get_system_time() + boost::posix_time::milliseconds(1)))
+                    boost::get_system_time() + boost::chrono::milliseconds(1)))
                 {
                     if (aborted_.load() || close_operation_.load()) {
                         aborted_.store(false);

@@ -14,7 +14,8 @@
 #include <hpx/runtime/threads/thread_data.hpp>
 #include <hpx/runtime/threads/thread_helpers.hpp>
 
-#include <boost/date_time/posix_time/ptime.hpp>
+#include <boost/chrono/duration.hpp>
+#include <boost/chrono/time_point.hpp>
 #include <boost/intrusive/slist.hpp>
 #include <boost/noncopyable.hpp>
 
@@ -222,41 +223,6 @@ namespace hpx { namespace lcos { namespace local { namespace detail
 
         template <typename Lock>
         threads::thread_state_ex_enum
-        wait_for(Lock& lock, boost::posix_time::time_duration const& rel_time,
-            char const* description, error_code& ec = throws)
-        {
-            HPX_ASSERT_OWNS_LOCK(lock);
-
-            threads::thread_self* self = threads::get_self_ptr_checked(ec);
-            if (0 == self || ec) return threads::wait_unknown;
-
-            // enqueue the request and block this thread
-            queue_entry f(threads::get_self_id());
-            queue_.push_back(f);
-
-            reset_queue_entry r(f, queue_);
-            {
-                // yield this thread
-                util::scoped_unlock<Lock> unlock(lock);
-                threads::thread_state_ex_enum const reason =
-                    this_thread::suspend(rel_time, description, ec);
-                if (ec) return threads::wait_unknown;
-
-                return reason;
-            }
-        }
-
-        template <typename Lock>
-        threads::thread_state_ex_enum
-        wait_for(Lock& lock, boost::posix_time::time_duration const& rel_time,
-            error_code& ec = throws)
-        {
-            return wait_for(lock, rel_time,
-                "condition_variable::wait_for", ec);
-        }
-
-        template <typename Lock>
-        threads::thread_state_ex_enum
         wait_until(Lock& lock, boost::posix_time::ptime const& abs_time,
             char const* description, error_code& ec = throws)
         {
@@ -288,6 +254,24 @@ namespace hpx { namespace lcos { namespace local { namespace detail
         {
             return wait_until(lock, abs_time,
                 "condition_variable::wait_until", ec);
+        }
+
+        template <typename Lock>
+        threads::thread_state_ex_enum
+        wait_for(Lock& lock, boost::posix_time::time_duration const& rel_time,
+            char const* description, error_code& ec = throws)
+        {
+            return wait_until(lock, boost::get_system_time() + rel_time,
+                description, ec);
+        }
+
+        template <typename Lock>
+        threads::thread_state_ex_enum
+        wait_for(Lock& lock, boost::posix_time::time_duration const& rel_time,
+            error_code& ec = throws)
+        {
+            return wait_until(lock, boost::get_system_time() + rel_time,
+                "condition_variable::wait_for", ec);
         }
 
     private:

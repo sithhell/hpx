@@ -406,8 +406,8 @@ void register_worker(registration_header const& header)
             got_root_certificate = true;
             break;
         }
-        boost::this_thread::sleep(boost::get_system_time() +
-            boost::posix_time::milliseconds(HPX_NETWORK_RETRIES_SLEEP));
+        boost::this_thread::sleep_for(
+            boost::chrono::milliseconds(HPX_NETWORK_RETRIES_SLEEP));
     }
 
     if (!got_root_certificate)

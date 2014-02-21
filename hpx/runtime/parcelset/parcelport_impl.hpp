@@ -438,8 +438,8 @@ namespace hpx { namespace parcelset
                 }
 
                 // Wait for a really short amount of time.
-                boost::this_thread::sleep(boost::get_system_time() +
-                    boost::posix_time::milliseconds(HPX_NETWORK_RETRIES_SLEEP));
+                boost::this_thread::sleep_for(
+                    boost::chrono::milliseconds(HPX_NETWORK_RETRIES_SLEEP));
             }
 
             // If we didn't get a connection or permission to create one (which is

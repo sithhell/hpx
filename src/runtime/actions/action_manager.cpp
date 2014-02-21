@@ -33,8 +33,8 @@ namespace hpx { namespace actions
 
         while (threads::threadmanager_is(starting))
         {
-            boost::this_thread::sleep(boost::get_system_time() +
-                boost::posix_time::milliseconds(HPX_NETWORK_RETRIES_SLEEP));
+            boost::this_thread::sleep_for(
+                boost::chrono::milliseconds(HPX_NETWORK_RETRIES_SLEEP));
         }
 
         // Give up if we're shutting down.

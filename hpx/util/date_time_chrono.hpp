@@ -7,7 +7,8 @@
 #define HPX_UTIL_DATE_TIME_CHRONO_APR_10_2012_0449PM
 
 #include <hpx/hpx_fwd.hpp>
-#include <boost/chrono/chrono.hpp>
+#include <boost/chrono/duration.hpp>
+#include <boost/chrono/time_point.hpp>
 #include <boost/date_time/posix_time/posix_time_duration.hpp>
 #include <boost/date_time/posix_time/ptime.hpp>
 

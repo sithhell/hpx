@@ -347,11 +347,6 @@ namespace hpx
             this_thread::suspend(at, "this_thread::sleep_until");
         }
 
-        void sleep_for(boost::posix_time::time_duration const& p)
-        {
-            this_thread::suspend(p, "this_thread::sleep_for");
-        }
-
         ///////////////////////////////////////////////////////////////////////
         disable_interruption::disable_interruption()
           : interruption_was_enabled_(interruption_enabled())

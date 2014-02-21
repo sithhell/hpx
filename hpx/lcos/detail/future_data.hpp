@@ -343,27 +343,6 @@ namespace detail
         }
 
         virtual BOOST_SCOPED_ENUM(future_status)
-        wait_for(boost::posix_time::time_duration const& p, error_code& ec = throws)
-        {
-            typename mutex_type::scoped_lock l(mtx_);
-
-            // block if this entry is empty
-            if (state_ == empty) {
-                threads::thread_state_ex_enum const reason =
-                    cond_.wait_for(l, p, "future_data::wait_for", ec);
-                if (ec) return future_status::uninitialized;
-
-                return (reason == threads::wait_signaled) ?
-                    future_status::timeout : future_status::ready; //-V110
-            }
-
-            if (&ec != &throws)
-                ec = make_success_code();
-
-            return future_status::ready; //-V110
-        }
-
-        virtual BOOST_SCOPED_ENUM(future_status)
         wait_until(boost::posix_time::ptime const& at, error_code& ec = throws)
         {
             typename mutex_type::scoped_lock l(mtx_);
@@ -531,12 +510,6 @@ namespace detail
                 this->do_run();
             else
                 this->future_data<Result>::wait(ec);
-        }
-
-        virtual BOOST_SCOPED_ENUM(future_status)
-        wait_for(boost::posix_time::time_duration const& p, error_code& ec = throws)
-        {
-            return future_status::deferred; //-V110
         }
 
         virtual BOOST_SCOPED_ENUM(future_status)

@@ -12,9 +12,8 @@
 #include <hpx/lcos/local/spinlock.hpp>
 #include <hpx/util/scoped_unlock.hpp>
 
-#include <boost/chrono/time_point.hpp>
 #include <boost/chrono/duration.hpp>
-#include <boost/date_time/posix_time/ptime.hpp>
+#include <boost/chrono/time_point.hpp>
 #include <boost/detail/scoped_enum_emulation.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -116,17 +115,7 @@ namespace hpx { namespace lcos { namespace local
             boost::posix_time::time_duration const& p,
             error_code& ec = throws)
         {
-            util::ignore_while_checking ignore_lock(&lock);
-            mutex_type::scoped_lock l(mtx_);
-            util::scoped_unlock<Lock> unlock(lock);
-
-            threads::thread_state_ex_enum const reason =
-                cond_.wait_for(l, p, ec);
-            if (ec) return cv_status::error;
-
-            // if the timer has hit, the waiting period timed out
-            return (reason == threads::wait_signaled) ? //-V110
-                cv_status::timeout : cv_status::no_timeout;
+            return wait_until(lock, boost::get_system_time() + p, ec);
         }
 
         template <typename Lock, typename Rep, typename Period>
@@ -143,16 +132,7 @@ namespace hpx { namespace lcos { namespace local
             boost::posix_time::time_duration const& p,
             Predicate pred, error_code& ec = throws)
         {
-            boost::posix_time::ptime const deadline =
-                boost::posix_time::microsec_clock::local_time() + p;
-            while (!pred())
-            {
-                boost::posix_time::ptime const now =
-                    boost::posix_time::microsec_clock::local_time();
-                if (wait_for(lock, deadline - now, ec) == cv_status::timeout)
-                    return pred();
-            }
-            return true;
+            return wait_until(lock, boost::get_system_time() + p, pred, ec);
         }
 
         template <typename Lock, typename Rep, typename Period, typename Predicate>

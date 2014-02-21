@@ -168,8 +168,8 @@ namespace hpx { namespace parcelset { namespace policies { namespace ibverbs
                         "connection_handler(ibverbs)::create_connection");
                 }
                 else {
-                    boost::this_thread::sleep(boost::get_system_time() +
-                        boost::posix_time::milliseconds(
+                    boost::this_thread::sleep_for(
+                        boost::chrono::milliseconds(
                             HPX_NETWORK_RETRIES_SLEEP));
                 }
             }

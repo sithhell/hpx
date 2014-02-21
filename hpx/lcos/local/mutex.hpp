@@ -23,7 +23,8 @@
 #include <boost/intrusive/slist.hpp>
 #include <boost/thread/locks.hpp>
 #include <boost/thread/xtime.hpp>
-#include <boost/date_time/posix_time/ptime.hpp>
+#include <boost/chrono/duration.hpp>
+#include <boost/chrono/time_point.hpp>
 #include <hpx/util/register_locks.hpp>
 
 // Disable warning C4275: non dll-interface class used as base for dll-interface

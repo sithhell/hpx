@@ -115,17 +115,22 @@ namespace hpx { namespace threads
         {
         public:
             // Schedule given function for execution in this executor no sooner
-            // than time abs_time. This call never blocks, and may violate
-            // bounds on the executor's queue size.
-            virtual void add_at(boost::posix_time::ptime const& abs_time,
-                HPX_STD_FUNCTION<void()> && f, char const* desc,
-                threads::thread_stacksize stacksize, error_code& ec) = 0;
-
-            // Schedule given function for execution in this executor no sooner
             // than time rel_time from now. This call never blocks, and may
             // violate bounds on the executor's queue size.
             virtual void add_after(
                 boost::posix_time::time_duration const& rel_time,
+                HPX_STD_FUNCTION<void()> && f, char const* desc,
+                threads::thread_stacksize stacksize, error_code& ec)
+            {
+                add_at(
+                    boost::get_system_time() + rel_time,
+                    std::move(f), desc, stacksize, ec);
+            }
+
+            // Schedule given function for execution in this executor no sooner
+            // than time abs_time. This call never blocks, and may violate
+            // bounds on the executor's queue size.
+            virtual void add_at(boost::posix_time::ptime const& abs_time,
                 HPX_STD_FUNCTION<void()> && f, char const* desc,
                 threads::thread_stacksize stacksize, error_code& ec) = 0;
         };

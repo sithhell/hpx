@@ -19,7 +19,8 @@
 #include <hpx/runtime/actions/continuation.hpp>
 
 #include <boost/intrusive_ptr.hpp>
-#include <boost/date_time/posix_time/ptime.hpp>
+#include <boost/chrono/duration.hpp>
+#include <boost/chrono/time_point.hpp>
 #include <boost/function_types/result_type.hpp>
 #include <boost/detail/iterator.hpp>
 #include <boost/static_assert.hpp>
@@ -633,38 +634,6 @@ namespace hpx { namespace lcos { namespace detail
 
         // Effects: none if the shared state contains a deferred function
         //          (30.6.8), otherwise blocks until the shared state is ready
-        //          or until the relative timeout (30.2.4) specified by
-        //          rel_time has expired.
-        // Returns:
-        //   - future_status::deferred if the shared state contains a deferred
-        //     function.
-        //   - future_status::ready if the shared state is ready.
-        //   - future_status::timeout if the function is returning because the
-        //     relative timeout (30.2.4) specified by rel_time has expired.
-        // Throws: timeout-related exceptions (30.2.4).
-        BOOST_SCOPED_ENUM(future_status)
-        wait_for(boost::posix_time::time_duration const& rel_time,
-            error_code& ec = throws) const
-        {
-            if (!shared_state_)
-            {
-                HPX_THROWS_IF(ec, no_state,
-                    "future_base<R>::wait_for",
-                    "this future has no valid shared state");
-                return future_status::uninitialized;
-            }
-            return shared_state_->wait_for(rel_time, ec);
-        }
-        template <class Rep, class Period>
-        BOOST_SCOPED_ENUM(future_status)
-        wait_for(boost::chrono::duration<Rep, Period> const& rel_time,
-            error_code& ec = throws) const
-        {
-            return wait_for(util::to_time_duration(rel_time), ec);
-        }
-
-        // Effects: none if the shared state contains a deferred function
-        //          (30.6.8), otherwise blocks until the shared state is ready
         //          or until the absolute timeout (30.2.4) specified by
         //          abs_time has expired.
         // Returns:
@@ -693,6 +662,31 @@ namespace hpx { namespace lcos { namespace detail
             error_code& ec = throws) const
         {
             return wait_until(util::to_ptime(abs_time), ec);
+        }
+
+        // Effects: none if the shared state contains a deferred function
+        //          (30.6.8), otherwise blocks until the shared state is ready
+        //          or until the relative timeout (30.2.4) specified by
+        //          rel_time has expired.
+        // Returns:
+        //   - future_status::deferred if the shared state contains a deferred
+        //     function.
+        //   - future_status::ready if the shared state is ready.
+        //   - future_status::timeout if the function is returning because the
+        //     relative timeout (30.2.4) specified by rel_time has expired.
+        // Throws: timeout-related exceptions (30.2.4).
+        BOOST_SCOPED_ENUM(future_status)
+        wait_for(boost::posix_time::time_duration const& rel_time,
+            error_code& ec = throws) const
+        {
+            return wait_until(boost::get_system_time() + rel_time, ec);
+        }
+        template <class Rep, class Period>
+        BOOST_SCOPED_ENUM(future_status)
+        wait_for(boost::chrono::duration<Rep, Period> const& rel_time,
+            error_code& ec = throws) const
+        {
+            return wait_for(util::to_time_duration(rel_time), ec);
         }
 
     protected:

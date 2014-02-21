@@ -41,13 +41,6 @@ namespace hpx { namespace threads { namespace executors
                 HPX_STD_FUNCTION<void()> && f, char const* description,
                 threads::thread_stacksize stacksize, error_code& ec);
 
-            // Schedule given function for execution in this executor no sooner
-            // than time rel_time from now. This call never blocks, and may
-            // violate bounds on the executor's queue size.
-            void add_after(boost::posix_time::time_duration const& rel_time,
-                HPX_STD_FUNCTION<void()> && f, char const* description,
-                threads::thread_stacksize stacksize, error_code& ec);
-
             // Return an estimate of the number of waiting tasks.
             std::size_t num_pending_closures(error_code& ec) const;
 

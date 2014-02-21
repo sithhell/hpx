@@ -38,7 +38,7 @@ namespace hpx { namespace threads { namespace detail
             // create timer firing in correspondence with given time
             boost::asio::deadline_timer t (
                 get_thread_pool("timer-thread")->get_io_service(),
-                boost::posix_time::milliseconds(1000));
+                boost::chrono::milliseconds(1000));
 
             void (*handler)(SchedulingPolicy&, boost::atomic<hpx::state>&, boost::mpl::true_) =
                 &periodic_maintenance_handler<SchedulingPolicy>;
@@ -60,12 +60,12 @@ namespace hpx { namespace threads { namespace detail
     {
         scheduler.periodic_maintenance(global_state == running);
 
-        boost::posix_time::milliseconds expire(1000);
+        boost::chrono::milliseconds expire(1000);
 
         // create timer firing in correspondence with given time
         boost::asio::deadline_timer t (
             get_thread_pool("io-thread")->get_io_service(),
-            boost::posix_time::milliseconds(1000));
+            boost::chrono::milliseconds(1000));
 
         void (*handler)(SchedulingPolicy&, boost::atomic<hpx::state>&, boost::mpl::true_) =
             &periodic_maintenance_handler<SchedulingPolicy>;

@@ -12,8 +12,8 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/exception_ptr.hpp>
-#include <boost/date_time/posix_time/ptime.hpp>
-#include <boost/date_time/posix_time/posix_time_config.hpp>
+#include <boost/chrono/duration.hpp>
+#include <boost/chrono/time_point.hpp>
 
 #include <hpx/hpx_fwd.hpp>
 #include <hpx/state.hpp>

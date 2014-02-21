@@ -42,27 +42,6 @@ namespace hpx { namespace threads { namespace executors { namespace detail
         set_thread_state(id, abs_time);
     }
 
-    // Schedule given function for execution in this executor no sooner
-    // than time rel_time from now. This call never blocks, and may
-    // violate bounds on the executor's queue size.
-    void default_executor::add_after(
-        boost::posix_time::time_duration const& rel_time,
-        HPX_STD_FUNCTION<void()> && f, char const* description,
-        threads::thread_stacksize stacksize, error_code& ec)
-    {
-        // create new thread
-        thread_id_type id = register_thread_nullary(
-            std::move(f), description, suspended, false,
-            threads::thread_priority_normal, std::size_t(-1),
-            stacksize, ec);
-        if (ec) return;
-
-        HPX_ASSERT(invalid_thread_id != id);    // would throw otherwise
-
-        // now schedule new thread for execution
-        set_thread_state(id, rel_time);
-    }
-
     // Return an estimate of the number of waiting tasks.
     std::size_t default_executor::num_pending_closures(error_code& ec) const
     {

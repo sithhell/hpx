@@ -83,23 +83,6 @@ namespace hpx { namespace threads { namespace executors { namespace detail
         t->async_wait(util::bind(&delayed_add, this, std::move(f), t));
     }
 
-    // Schedule given function for execution in this executor no sooner
-    // than time rel_time from now. This call never blocks, and may
-    // violate bounds on the executor's queue size.
-    void service_executor::add_after(
-        boost::posix_time::time_duration const& rel_time,
-        HPX_STD_FUNCTION<void()> && f, char const* desc, 
-        threads::thread_stacksize stacksize, error_code& ec)
-    {
-        ++task_count_;
-
-        boost::shared_ptr<boost::asio::deadline_timer> t(
-            boost::make_shared<boost::asio::deadline_timer>(
-                pool_->get_io_service(), rel_time));
-
-        t->async_wait(util::bind(&delayed_add, this, std::move(f), t));
-    }
-
     // Return an estimate of the number of waiting tasks.
     std::size_t service_executor::num_pending_closures(error_code& ec) const
     {
