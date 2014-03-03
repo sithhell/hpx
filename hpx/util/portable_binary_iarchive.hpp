@@ -36,11 +36,13 @@
 #include <boost/serialization/string.hpp>
 #include <boost/archive/archive_exception.hpp>
 #include <boost/archive/detail/common_iarchive.hpp>
-#include <boost/archive/shared_ptr_helper.hpp>
 #include <boost/archive/detail/register_archive.hpp>
 #if BOOST_VERSION >= 104400
 #include <boost/serialization/item_version_type.hpp>
 #include <boost/serialization/collection_size_type.hpp>
+#endif
+#if BOOST_VERSION <= 105500
+#include <boost/archive/shared_ptr_helper.hpp>
 #endif
 
 #include <hpx/config.hpp>
@@ -95,8 +97,10 @@ class HPX_SERIALIZATION_EXPORT portable_binary_iarchive :
     >,
     public boost::archive::detail::common_iarchive<
         portable_binary_iarchive
-    >,
-    public boost::archive::detail::shared_ptr_helper
+    >
+#if BOOST_VERSION <= 105500
+  , public boost::archive::detail::shared_ptr_helper
+#endif
 {
     typedef hpx::util::basic_binary_iprimitive<
         portable_binary_iarchive
