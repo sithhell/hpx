@@ -285,6 +285,13 @@ namespace hpx { namespace lcos { namespace detail
         F && f);
 
     ///////////////////////////////////////////////////////////////////////////
+    class void_continuation;
+
+    template <typename Future>
+    inline typename shared_state_ptr<void>::type
+    make_void_continuation(Future& future);
+
+    ///////////////////////////////////////////////////////////////////////////
     template <typename Future>
     struct unwrap_result
     {
@@ -700,7 +707,7 @@ namespace hpx { namespace lcos
         //     constructor invocation.
         //   - other.valid() == false.
         future(future<future> && other) BOOST_NOEXCEPT
-          : base_type(other.valid() ? std::move(other.unwrap()) : base_type())
+          : base_type(other.valid() ? other.unwrap() : base_type())
         {}
 
         // Effects: constructs a future<void> object that will be ready when
@@ -710,10 +717,12 @@ namespace hpx { namespace lcos
         //     constructor invocation.
         //   - other.valid() == false.
         template <typename T>
-        explicit future(future<T> other,
+        explicit future(future<T>&& other,
             typename boost::enable_if<boost::is_void<R>, T>::type* = 0
         ) : base_type(other.valid() ? detail::make_void_continuation(other) : 0)
-        {}
+        {
+            other = future<T>();
+        }
 
         // Effects:
         //   - releases any shared state (30.6.4);
@@ -841,11 +850,9 @@ namespace hpx { namespace lcos
     ///////////////////////////////////////////////////////////////////////////
     // allow to convert any future into a future<void>
     template <typename R>
-    future<void> make_future_void(future<R> f)
+    future<void> make_future_void(future<R>&& f)
     {
-        using lcos::detail::future_access;
-        return future_access::create<future<void> >(
-            detail::make_void_continuation(f));
+        return std::move(f);
     }
 }}
 
@@ -932,7 +939,7 @@ namespace hpx { namespace lcos
         //   - valid() returns the same value as other.valid() prior to the
         //     constructor invocation.
         template <typename T>
-        explicit shared_future(shared_future<T> other,
+        explicit shared_future(shared_future<T> const& other,
             typename boost::enable_if<boost::is_void<R>, T>::type* = 0
         ) : base_type(other.valid() ? detail::make_void_continuation(other) : 0)
         {}
@@ -1041,11 +1048,9 @@ namespace hpx { namespace lcos
     ///////////////////////////////////////////////////////////////////////////
     // allow to convert any future into a future<void>
     template <typename R>
-    shared_future<void> make_future_void(shared_future<R>& f)
+    shared_future<void> make_future_void(shared_future<R> const& f)
     {
-        using lcos::detail::future_access;
-        return future_access::create<shared_future<void> >(
-            detail::make_void_continuation(f));
+        return f;
     }
 }}
 
