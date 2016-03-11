@@ -1,5 +1,5 @@
 # Copyright (c) 2007-2015 Hartmut Kaiser
-# Copyright (c) 2011-2014 Thomas Heller
+# Copyright (c) 2011-2014 Thomas Heller test
 # Copyright (c) 2007-2008 Chirag Dekate
 # Copyright (c)      2011 Bryce Lelbach
 # Copyright (c)      2011 Vinay C Amatya
