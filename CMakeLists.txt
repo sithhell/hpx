@@ -8,7 +8,7 @@
 #
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-# dgsdfg sfdgdsfgdfg sdfsdgfsdfg fgdfgdfg
+# dgsdfg sfdgdsfgdfg sdfsdgfsdfg
 # We require at least CMake V2.8.10
 cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
