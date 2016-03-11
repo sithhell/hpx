@@ -488,6 +488,7 @@ namespace hpx { namespace util
             }
 
             // store loaded library for future use
+            assert(false);
             modules.insert(std::make_pair(p.second, boost::move(d)));
         }
         return plugin_registries;
