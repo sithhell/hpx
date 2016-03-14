@@ -80,7 +80,7 @@ namespace hpx { namespace util
         std::string ini_paths_suffixes(ini.get_entry("hpx.master_ini_path_suffixes"));
 
         // split off the separate paths from the given path list
-        typedef boost::tokenizer<boost::char_separator<char> >  tokenizer_type;
+        typedef boost::tokenizer<boost::char_separator<char> > tokenizer_type;
 
         boost::char_separator<char> sep (HPX_INI_PATH_DELIMITER);
         tokenizer_type tok_paths(ini_paths, sep);
