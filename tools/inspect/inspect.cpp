@@ -784,13 +784,13 @@ namespace boost
     string impute_library( const path & full_dir_path )
     {
       path relative( relative_to( full_dir_path, search_root_path() ) );
-      if ( relative.empty() ) return "hpx-root";
+      if ( relative.empty() ) return "boost-root";
       string first( (*relative.begin()).string() );
       string second =  // borland 5.61 requires op=
         ++relative.begin() == relative.end()
           ? string() : (*++relative.begin()).string();
 
-      if ( first == "hpx" )
+      if ( first == "boost" )
         return second;
 
       return (( first == "libs" || first == "tools" ) && !second.empty())
