@@ -20,20 +20,28 @@ hpx_add_config_define(HPX_HAVE_PARCELPORT_LIBFABRIC)
 #------------------------------------------------------------------------------
 # OFIWG libfabric stack
 #------------------------------------------------------------------------------
-find_package(Libfabric REQUIRED)
-find_package(PMI REQUIRED)
+if(HPX_PARCELPORT_LIBFABRIC_WITH_HPXC)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/libfabric/CMakeLists.txt)
+else()
+  find_package(Libfabric REQUIRED)
+endif()
+
+find_package(PMI)
 
 if (PMI_FOUND)
   hpx_add_config_define_namespace(
     DEFINE HPX_PARCELPORT_LIBFABRIC_HAVE_PMI
     NAMESPACE parcelport)
+else()
+    message("Overriding PMI")
+    set(PMI_LIBRARY "" CACHE INTERNAL "" FORCE)
 endif()
 
 #------------------------------------------------------------------------------
 # Logging
 #------------------------------------------------------------------------------
 hpx_option(HPX_PARCELPORT_LIBFABRIC_WITH_LOGGING BOOL
-  "Enable logging in the Verbs ParcelPort (default: OFF - Warning - severely impacts usability when enabled)"
+  "Enable logging in the libfabric ParcelPort (default: OFF - Warning - severely impacts usability when enabled)"
   OFF CATEGORY "Parcelport" ADVANCED)
 
 if (HPX_PARCELPORT_LIBFABRIC_WITH_LOGGING)
@@ -245,15 +253,60 @@ endif()
 #------------------------------------------------------------------------------
 include(HPX_AddLibrary)
 
-# make these variables cache ones so that the macro definitions picks them up correctly
-set(_libfabric_libraries
+# make these variables cache ones so that the macro definition picks them up correctly
+# it is executed from a different source dir, so vars lose their scope
+
+set(_parcelport_CXX_srcs
+  "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/libfabric_controller.cpp"
+  "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/parcelport_libfabric.cpp"
+  "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/receiver.cpp"
+  "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/rma_receiver.cpp"
+  "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/sender.cpp"
+  CACHE INTERNAL "" FORCE)
+
+set(_hpxc_CXX_srcs          "" CACHE INTERNAL "" FORCE)
+set(_libfabric_C_srcs       "" CACHE INTERNAL "" FORCE)
+set(_libfabric_libraries    "" CACHE INTERNAL "" FORCE)
+set(_libfabric_include_dirs "" CACHE INTERNAL "" FORCE)
+
+if(NOT HPX_PARCELPORT_LIBFABRIC_WITH_HPXC)
+  set(_libfabric_libraries
     "${LIBFABRIC_LIBRARIES}"
     "${PMI_LIBRARY}"
-    CACHE STRING "" FORCE)
+    CACHE INTERNAL "" FORCE)
 
-set(_libfabric_include_dirs
+  set(_libfabric_include_dirs
     "${LIBFABRIC_INCLUDE_DIRS}"
-    CACHE STRING "" FORCE)
+    CACHE INTERNAL "" FORCE)
+else()
+  set(_libfabric_libraries
+    "${PMI_LIBRARY}"
+    "${GNI_LIB}"
+    CACHE INTERNAL "" FORCE)
+
+  set(_libfabric_C_srcs
+    ${libfabric_SRCS}
+    ${libfabric_util_SRCS}
+    ${libfabric_gni_SRCS}
+    CACHE INTERNAL "" FORCE)
+
+  set(_hpxc_CXX_srcs ${_parcelport_CXX_srcs}
+    "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/hpxc/src/threads/thread.cpp"
+    CACHE INTERNAL "" FORCE)
+
+  set(_parcelport_CXX_srcs ${_parcelport_CXX_srcs} ${_hpxc_CXX_srcs}
+    CACHE INTERNAL "" FORCE)
+
+  set(_libfabric_include_dirs
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/hpxc
+    ${CMAKE_CURRENT_SOURCE_DIR}/libfabric
+    ${CMAKE_CURRENT_SOURCE_DIR}/libfabric/prov/gni
+    ${CMAKE_CURRENT_SOURCE_DIR}/libfabric/prov/gni/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/libfabric/include
+    ${GNI_INCLUDE}
+    CACHE INTERNAL "" FORCE)
+endif()
 
 macro(add_parcelport_libfabric_module)
   hpx_debug("add_parcelport_libfabric_module")
@@ -263,27 +316,34 @@ macro(add_parcelport_libfabric_module)
   add_parcelport(libfabric
     STATIC
     SOURCES
-        "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/libfabric_controller.cpp"
-        "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/parcelport_libfabric.cpp"
-        "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/receiver.cpp"
-        "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/rma_receiver.cpp"
-        "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/sender.cpp"
-    # do we need to declare any of these headers?
-    HEADERS
+        ${_parcelport_CXX_srcs}
+        ${_libfabric_C_srcs}
     DEPENDENCIES
         ${_libfabric_libraries}
     FOLDER
       "Core/Plugins/Parcelport/libfabric")
+
+  if(HPX_PARCELPORT_LIBFABRIC_WITH_HPXC)
+    set_source_files_properties(
+      ${_libfabric_C_srcs}
+      PROPERTIES
+        COMPILE_FLAGS
+            "-include \"hpxc/hpxc/pthread_compatibility.h\" \
+            -include \"libfabric/config.h\"                 \
+            -Wsign-compare -Wunused-parameter"
+        LANGUAGE C)
+
+    set_source_files_properties(
+      ${_parcelport_CXX_srcs}
+      PROPERTIES
+        COMPILE_FLAGS "-include \"libfabric/config.h\" -Wno-missing-field-initializers"
+        LANGUAGE CXX)
+  else()
+    set_source_files_properties(
+      ${_parcelport_CXX_srcs}
+      PROPERTIES
+        COMPILE_FLAGS "-Wno-missing-field-initializers"
+        LANGUAGE CXX)
+  endif()
 endmacro()
-
-include_directories(${LIBFABRIC_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-#add_executable(fabric_pingpong
-#  fabric_pingpong.c
-#)
-
-#target_link_libraries(fabric_pingpong
-#  ${LIBFABRIC_LIBRARIES}
-#)
 
