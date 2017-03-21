@@ -213,7 +213,7 @@ namespace libfabric
             }
 
             if (!free_list_.push(region)) {
-                LOG_ERROR_MSG(PoolType::desc() << "Error in memory pool push");
+//                 LOG_ERROR_MSG(PoolType::desc() << "Error in memory pool push");
             }
             // decrement one reference
             used_--;
