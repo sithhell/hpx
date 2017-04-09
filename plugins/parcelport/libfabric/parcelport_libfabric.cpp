@@ -232,7 +232,7 @@ namespace libfabric
     std::shared_ptr<sender> parcelport::create_connection(
         parcelset::locality const& dest, error_code& ec)
     {
-        LOG_DEVEL_MSG("Creating new sender");
+        LOG_DEBUG_MSG("Creating new sender");
         return std::shared_ptr<sender>();
     }
 
@@ -294,7 +294,7 @@ namespace libfabric
         if (match.size()==0 ||
             temp.find(match)!=std::string::npos)
         {
-            LOG_DEVEL_MSG("Suspended threads " << temp);
+            LOG_DEBUG_MSG("Suspended threads " << temp);
         }
     }
 
@@ -314,7 +314,7 @@ namespace libfabric
                 LOG_TIMED_INIT(disconnect_poll);
                 LOG_TIMED_BLOCK(disconnect_poll, DEVEL, 5.0,
                     {
-                        LOG_DEVEL_MSG("Polling before shutdown");
+                        LOG_DEBUG_MSG("Polling before shutdown");
                     }
                 )
             }

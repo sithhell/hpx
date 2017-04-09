@@ -61,7 +61,7 @@ namespace libfabric
 
     rma_receiver::~rma_receiver()
     {
-        LOG_DEVEL_MSG("Receiving of message complete " << hexpointer(this));
+        LOG_DEBUG_MSG("Receiving of message complete " << hexpointer(this));
     }
 
     void rma_receiver::async_read(
@@ -80,7 +80,7 @@ namespace libfabric
         HPX_ASSERT(header_region_);
         HPX_ASSERT(header_region_->get_address());
         HPX_ASSERT(header_);
-        LOG_DEVEL_MSG( "received " <<
+        LOG_DEBUG_MSG( "received " <<
                 "buffsize " << decnumber(header_->size())
                 << "chunks zerocopy( " << decnumber(header_->num_chunks().first) << ") "
                 << ", chunk_flag " << decnumber(header_->header_length())
@@ -141,7 +141,7 @@ namespace libfabric
                 libfabric_memory_region *get_region =
                     memory_pool_->allocate_region(c.size_);
 
-                LOG_DEVEL_MSG("RDMA Get addr " << hexpointer(c.data_.cpos_)
+                LOG_DEBUG_MSG("RDMA Get addr " << hexpointer(c.data_.cpos_)
                     << "rkey " << hexpointer(c.rkey_)
                     << "size " << hexnumber(c.size_)
                     << "tag " << hexuint64(header_->tag())
@@ -158,7 +158,7 @@ namespace libfabric
                         get_region->get_address(), c.size_, c.rkey_);
 
                 // post the rdma read/get
-                LOG_DEVEL_MSG("RDMA Get fi_read :"
+                LOG_DEBUG_MSG("RDMA Get fi_read :"
                     << " chunk " << decnumber(index)
                     << " client " << hexpointer(endpoint_)
                     << " fi_addr " << hexpointer(src_addr_)
@@ -189,7 +189,7 @@ namespace libfabric
                     }
                     if (ret == -FI_EAGAIN)
                     {
-                        LOG_DEVEL_MSG("reposting read...\n");
+                        LOG_DEBUG_MSG("reposting read...\n");
                         hpx::util::detail::yield_k(k,
                             "libfabric::rma_receiver::async_read");
                         continue;
@@ -210,7 +210,7 @@ namespace libfabric
             message_region_ = memory_pool_->allocate_region(size);
             message_region_->set_message_length(size);
 
-            LOG_DEVEL_MSG("RDMA Get fi_read message :"
+            LOG_DEBUG_MSG("RDMA Get fi_read message :"
                 << " client " << hexpointer(endpoint_)
                 << " fi_addr " << hexpointer(src_addr_)
                 << " local addr " << hexpointer(message_region_->get_address())
@@ -239,7 +239,7 @@ namespace libfabric
                 }
                 if (ret == -FI_EAGAIN)
                 {
-                    LOG_DEVEL_MSG("reposting read...\n");
+                    LOG_DEBUG_MSG("reposting read...\n");
                     hpx::util::detail::yield_k(k,
                         "libfabric::rma_receiver::async_read");
                     continue;
@@ -255,7 +255,7 @@ namespace libfabric
         typedef pinned_memory_vector<char, header_size> rcv_data_type;
         typedef parcel_buffer<rcv_data_type, std::vector<char>> rcv_buffer_type;
 
-        LOG_DEVEL_MSG("handle piggy backed sends without zero copy regions");
+        LOG_DEBUG_MSG("handle piggy backed sends without zero copy regions");
 
         HPX_ASSERT(header_);
         char *piggy_back = header_->piggy_back();
@@ -276,7 +276,7 @@ namespace libfabric
         LOG_DEBUG_MSG("calling parcel decode for complete NORMAL parcel");
         std::size_t num_thread = hpx::get_worker_thread_num();
         decode_message_with_chunks(*pp_, std::move(buffer), 1, chunks_, num_thread);
-        LOG_DEVEL_MSG("parcel decode called for complete NORMAL parcel");
+        LOG_DEBUG_MSG("parcel decode called for complete NORMAL parcel");
     }
 
     void rma_receiver::handle_read_completion()
@@ -351,14 +351,14 @@ namespace libfabric
         std::size_t num_thread = hpx::get_worker_thread_num();
 
         decode_message_with_chunks(*pp_, std::move(buffer), 1, chunks_, num_thread);
-        LOG_DEVEL_MSG("parcel decode called for ZEROCOPY complete parcel");
+        LOG_DEBUG_MSG("parcel decode called for ZEROCOPY complete parcel");
     }
 
     void rma_receiver::send_ack()
     {
 
 #if HPX_PARCELPORT_LIBFABRIC_IMM_UNSUPPORTED
-        LOG_DEVEL_MSG("RDMA Get tag " << hexuint64(header_->tag())
+        LOG_DEBUG_MSG("RDMA Get tag " << hexuint64(header_->tag())
             << " has completed : posting 8 byte ack to origin");
 
 
@@ -379,7 +379,7 @@ namespace libfabric
             }
             if (ret == -FI_EAGAIN)
             {
-                LOG_DEVEL_MSG("reposting inject...\n");
+                LOG_DEBUG_MSG("reposting inject...\n");
                 hpx::util::detail::yield_k(k,
                     "libfabric::rma_receiver::handle_read_completion");
                 continue;
@@ -389,7 +389,7 @@ namespace libfabric
         }
 
 #else
-        LOG_DEVEL_MSG("RDMA Get tag " << hexuint64(header_->tag())
+        LOG_DEBUG_MSG("RDMA Get tag " << hexuint64(header_->tag())
             << " has completed : posting zero byte ack to origin");
         std::terminate();
 #endif

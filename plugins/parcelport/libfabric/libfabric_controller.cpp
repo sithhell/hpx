@@ -72,7 +72,7 @@ namespace libfabric
                 ret = fi_cq_read(txcq_, &entry, 1);
         }
         if (ret>0) {
-            LOG_DEVEL_MSG("Completion txcq wr_id "
+            LOG_DEBUG_MSG("Completion txcq wr_id "
                 << fi_tostr(&entry.flags, FI_TYPE_OP_FLAGS)
                 << " (" << decnumber(entry.flags) << ") "
                 << "context " << hexpointer(entry.op_context)
@@ -89,7 +89,7 @@ namespace libfabric
                 handler->handle_send_completion();
             }
             else {
-                LOG_DEVEL_MSG("$$$$$ Received an unknown txcq completion ***** "
+                LOG_ERROR_MSG("$$$$$ Received an unknown txcq completion ***** "
                     << decnumber(entry.flags));
 //                     std::terminate();
             }
@@ -125,7 +125,7 @@ namespace libfabric
                 ret = fi_cq_readfrom(rxcq_, &entry, 1, &src_addr);
         }
         if (ret>0) {
-            LOG_DEVEL_MSG("Completion rxcq wr_id "
+            LOG_DEBUG_MSG("Completion rxcq wr_id "
                 << fi_tostr(&entry.flags, FI_TYPE_OP_FLAGS)
                 << " (" << decnumber(entry.flags) << ") "
                 << "source " << hexpointer(src_addr)
@@ -133,19 +133,16 @@ namespace libfabric
                 << "length " << hexuint32(entry.len));
             if (src_addr == FI_ADDR_NOTAVAIL)
             {
-                LOG_DEVEL_MSG("Source address not available...\n");
+                LOG_DEBUG_MSG("Source address not available...\n");
                 std::terminate();
             }
-//                     if ((entry.flags & FI_RMA) == FI_RMA) {
-//                         LOG_DEVEL_MSG("Received an rxcq RMA completion");
-//                     }
             else if (entry.flags == (FI_MSG | FI_RECV)) {
-                LOG_DEVEL_MSG("Received an rxcq recv completion "
+                LOG_DEBUG_MSG("Received an rxcq recv completion "
                     << hexpointer(entry.op_context));
                 reinterpret_cast<receiver *>(entry.op_context)->handle_recv(src_addr, entry.len);
             }
             else {
-                LOG_DEVEL_MSG("Received an unknown rxcq completion "
+                LOG_ERROR_MSG("Received an unknown rxcq completion "
                     << decnumber(entry.flags));
                 std::terminate();
             }
