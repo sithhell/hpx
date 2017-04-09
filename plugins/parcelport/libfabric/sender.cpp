@@ -9,7 +9,7 @@
 #include <plugins/parcelport/libfabric/pinned_memory_vector.hpp>
 #include <plugins/parcelport/libfabric/header.hpp>
 #include <plugins/parcelport/libfabric/sender.hpp>
-#include <plugins/parcelport/libfabric/parcelport.hpp>
+#include <plugins/parcelport/libfabric/parcelport_libfabric.hpp>
 
 #include <hpx/util/atomic_count.hpp>
 #include <hpx/util/unique_function.hpp>

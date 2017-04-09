@@ -16,7 +16,7 @@
 #include <plugins/parcelport/parcelport_logging.hpp>
 #include <plugins/parcelport/libfabric/rdma_locks.hpp>
 #include <plugins/parcelport/libfabric/libfabric_controller.hpp>
-#include <plugins/parcelport/libfabric/parcelport.hpp>
+#include <plugins/parcelport/libfabric/parcelport_libfabric.hpp>
 #include <plugins/parcelport/libfabric/receiver.hpp>
 #include <plugins/parcelport/libfabric/sender.hpp>
 #include <plugins/parcelport/libfabric/rma_receiver.hpp>
