@@ -600,11 +600,8 @@ namespace libfabric
         // are thrown away, otherwise the completion callback is triggered
         int poll_endpoints(bool stopped=false)
         {
-//             unique_lock lock(polling_mutex_, std::try_to_lock);
-//             if (!lock.owns_lock()) return 0;
-            //
-//             int work = poll_for_work_completions(lock, stopped);
-            int work = poll_for_work_completions(stopped);
+            int work = poll_for_work_completions();
+
 #ifdef HPX_PARCELPORT_LIBFABRIC_ENDPOINT_MSG
             work += poll_event_queue(stopped);
 #endif
@@ -612,8 +609,10 @@ namespace libfabric
         }
 
         // --------------------------------------------------------------------
-//         int poll_for_work_completions(unique_lock& lock, bool stopped=false)
-        int poll_for_work_completions(bool stopped=false);
+        int poll_for_work_completions();
+        int poll_send_queue();
+        int poll_recv_queue();
+
 
         // --------------------------------------------------------------------
         int poll_event_queue(bool stopped=false)
