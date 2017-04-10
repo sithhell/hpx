@@ -557,7 +557,7 @@ namespace hpx { namespace actions
             direct_action, Derived
         >::type derived_type;
 
-        typedef std::true_type direct_execution;
+        typedef std::false_type direct_execution;
 
         /// The function \a get_action_type returns whether this action needs
         /// to be executed in a new thread or directly.
