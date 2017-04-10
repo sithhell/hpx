@@ -572,7 +572,7 @@ namespace libfabric
             }
             else if (ret==0 || ret==-EAGAIN) {
                 // do nothing, we will try again on the next check
-                LOG_TIMED_MSG(poll, DEVEL, 5, "txcq EAGAIN");
+                LOG_TIMED_MSG(poll, DEVEL, 10, "txcq EAGAIN");
             }
             else if (ret<0) {
                 struct fi_cq_err_entry e = {};
@@ -630,7 +630,7 @@ namespace libfabric
             }
             else if (ret==0 || ret==-EAGAIN) {
                 // do nothing, we will try again on the next check
-                LOG_TIMED_MSG(poll, DEVEL, 5, "rxcq EAGAIN");
+                LOG_TIMED_MSG(poll, DEVEL, 10, "rxcq EAGAIN");
             }
             else if (ret<0) {
                 struct fi_cq_err_entry e = {};
