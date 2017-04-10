@@ -504,7 +504,15 @@ void test_write(
     if (rank==0) std::cout << "Iteration ";
     for (std::uint64_t i = 0; active && i < options.iterations; i++) {
         hpx::util::simple_profiler iteration(level1, "Iteration");
-        if (rank==0) std::cout << "." << std::flush;
+        if (rank==0) {
+            if (i%10==0)  {
+                std::cout << "x" << std::flush;
+            }
+            else {
+                std::cout << "." << std::flush;
+            }
+        }
+
         DEBUG_OUTPUT(1, "Starting iteration " << i << " on rank " << rank);
 
 #ifdef USE_CLEANING_THREAD
@@ -719,7 +727,15 @@ void test_read(
     if (rank==0) std::cout << "Iteration ";
     bool active = (rank==0) || (rank>0 && options.all2all);
     for (std::uint64_t i = 0; active && i < options.iterations; i++) {
-        if (rank==0) std::cout << "." << std::flush;
+        if (rank==0) {
+            if (i%10==0)  {
+                std::cout << "x" << std::flush;
+            }
+            else {
+                std::cout << "." << std::flush;
+            }
+        }
+
         DEBUG_OUTPUT(1, "Starting iteration " << i << " on rank " << rank);
 #ifdef USE_CLEANING_THREAD
         //
