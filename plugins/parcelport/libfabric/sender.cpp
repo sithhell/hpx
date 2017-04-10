@@ -9,6 +9,7 @@
 #include <plugins/parcelport/libfabric/pinned_memory_vector.hpp>
 #include <plugins/parcelport/libfabric/header.hpp>
 #include <plugins/parcelport/libfabric/sender.hpp>
+#include <plugins/parcelport/libfabric/parcelport.hpp>
 
 #include <hpx/util/atomic_count.hpp>
 #include <hpx/util/unique_function.hpp>
@@ -167,8 +168,18 @@ namespace libfabric
             << " region " << hexpointer(send_data.message_region));
             for (std::size_t k = 0; true; ++k)
             {
-                ret = fi_sendv(endpoint_, region_list_,
-                    desc_, num_regions, dst_addr_, this);
+                {
+                    std::unique_lock<parcelport::mutex_type> l(parcelport_->fi_mutex_, std::try_to_lock);
+                    if (l)
+                    {
+                        ret = fi_sendv(endpoint_, region_list_,
+                            desc_, num_regions, dst_addr_, this);
+                    }
+                    else
+                    {
+                        ret = -FI_EAGAIN;
+                    }
+                }
                 if (ret == -FI_EAGAIN)
                 {
                     LOG_DEVEL_MSG("reposting send...\n");
@@ -184,9 +195,19 @@ namespace libfabric
         {
             for (std::size_t k = 0; true; ++k)
             {
-                ret = fi_send(endpoint_,
-                    region_list_[0].iov_base, region_list_[0].iov_len,
-                desc_[0], dst_addr_, this);
+                {
+                    std::unique_lock<parcelport::mutex_type> l(parcelport_->fi_mutex_, std::try_to_lock);
+                    if (l)
+                    {
+                        ret = fi_send(endpoint_,
+                            region_list_[0].iov_base, region_list_[0].iov_len,
+                        desc_[0], dst_addr_, this);
+                    }
+                    else
+                    {
+                        ret = -FI_EAGAIN;
+                    }
+                }
                 if (ret == -FI_EAGAIN)
                 {
                     LOG_DEVEL_MSG("reposting send...\n");

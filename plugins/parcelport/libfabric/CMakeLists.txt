@@ -21,6 +21,13 @@ hpx_add_config_define(HPX_HAVE_PARCELPORT_LIBFABRIC)
 # OFIWG libfabric stack
 #------------------------------------------------------------------------------
 find_package(Libfabric REQUIRED)
+find_package(PMI REQUIRED)
+
+if (PMI_FOUND)
+  hpx_add_config_define_namespace(
+    DEFINE HPX_PARCELPORT_LIBFABRIC_HAVE_PMI
+    NAMESPACE parcelport)
+endif()
 
 #------------------------------------------------------------------------------
 # Logging
@@ -106,9 +113,9 @@ hpx_add_config_define_namespace(
 #------------------------------------------------------------------------------
 # Bootstrap options
 #------------------------------------------------------------------------------
-#hpx_option(HPX_PARCELPORT_LIBFABRIC_WITH_BOOTSTRAPPING BOOL
-#  "Configure the parcelport to enable bootstrap capabilities (default: ON)"
-#  OFF CATEGORY "Parcelport" ADVANCED)
+hpx_option(HPX_PARCELPORT_LIBFABRIC_WITH_BOOTSTRAPPING BOOL
+  "Configure the parcelport to enable bootstrap capabilities (default: OFF, enabled if PMI was found)"
+  ${PMI_FOUND} CATEGORY "Parcelport" ADVANCED)
 
 if (HPX_PARCELPORT_LIBFABRIC_WITH_BOOTSTRAPPING)
   hpx_add_config_define_namespace(
@@ -241,6 +248,7 @@ include(HPX_AddLibrary)
 # make these variables cache ones so that the macro definitions picks them up correctly
 set(_libfabric_libraries
     "${LIBFABRIC_LIBRARIES}"
+    "${PMI_LIBRARY}"
     CACHE STRING "" FORCE)
 
 set(_libfabric_include_dirs
@@ -255,6 +263,7 @@ macro(add_parcelport_libfabric_module)
   add_parcelport(libfabric
     STATIC
     SOURCES
+        "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/libfabric_controller.cpp"
         "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/parcelport_libfabric.cpp"
         "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/receiver.cpp"
         "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/rma_receiver.cpp"

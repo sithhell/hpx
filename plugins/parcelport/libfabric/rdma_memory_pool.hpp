@@ -193,7 +193,7 @@ namespace libfabric
         }
 
         // ------------------------------------------------------------------------
-        inline void push(libfabric_memory_region *region)
+        inline bool push(libfabric_memory_region *region)
         {
             LOG_TRACE_MSG(PoolType::desc() << "Push block "
                 << hexpointer(region->get_address()) << hexlength(region->get_size())
@@ -215,9 +215,11 @@ namespace libfabric
 
             if (!free_list_.push(region)) {
                 LOG_ERROR_MSG(PoolType::desc() << "Error in memory pool push");
+                return false;
             }
             // decrement one reference
             used_--;
+            return true;
         }
 
         // ------------------------------------------------------------------------
@@ -384,16 +386,20 @@ namespace libfabric
 
             // put the block back on the free list
             if (region->get_size()<=tiny_.chunk_size()) {
-                tiny_.push(region);
+                if(!tiny_.push(region))
+                    delete region;
             }
             else if (region->get_size()<=small_.chunk_size()) {
-                small_.push(region);
+                if(!small_.push(region))
+                    delete region;
             }
             else if (region->get_size()<=medium_.chunk_size()) {
-                medium_.push(region);
+                if(!medium_.push(region))
+                    delete region;
             }
             else if (region->get_size()<=large_.chunk_size()) {
-                large_.push(region);
+                if(!large_.push(region))
+                    delete region;
             }
 
             LOG_TRACE_MSG("Pushing Block"

@@ -31,6 +31,20 @@ namespace libfabric
     {
         LOG_DEVEL_MSG("created receiver: " << this);
         // Once constructed, we need to post the receive...
+
+        // Fill receivers...
+        auto f = [this](rma_receiver* recv)
+        {
+            if(!rma_receivers_.push(recv))
+                delete recv;
+        };
+        for (std::size_t i = 0; i < HPX_PARCELPORT_LIBFABRIC_THROTTLE_SENDS; ++i)
+        {
+            rma_receiver* recv = nullptr;
+            recv = new rma_receiver(pp_, endpoint_, memory_pool_, std::move(f));
+            rma_receivers_.push(recv);
+        }
+
         post_recv();
     }
 
@@ -86,6 +100,13 @@ namespace libfabric
             return;
         }
 
+        // We save the received region and swap it with a newly allocated
+        // to be able to post a recv again as soon as possible.
+        libfabric_memory_region* region = region_;
+        region_ = memory_pool_->allocate_region(
+            memory_pool_->small_.chunk_size());
+        post_recv();
+
         LOG_DEVEL_MSG("Handling message");
         rma_receiver* recv = nullptr;
         if(!rma_receivers_.pop(recv))
@@ -95,17 +116,11 @@ namespace libfabric
                 if(!rma_receivers_.push(recv))
                     delete recv;
             };
+            std::cout << "ran out of receivers...\n" << std::endl;
             recv = new rma_receiver(pp_, endpoint_, memory_pool_, std::move(f));
         }
 
         HPX_ASSERT(recv);
-
-        // We save the received region and swap it with a newly allocated
-        // to be able to post a recv again as soon as possible.
-        libfabric_memory_region* region = region_;
-        region_ = memory_pool_->allocate_region(
-            memory_pool_->small_.chunk_size());
-        post_recv();
 
         // we dispatch our work to our rma_receiver once it completed the
         // prior message
@@ -125,11 +140,22 @@ namespace libfabric
         int ret = 0;
         for (std::size_t k = 0; true; ++k)
         {
-            ret = fi_recv(
-                endpoint_,
-                region_->get_address(),
-                region_->get_size(),
-                desc, 0, this);
+            {
+                std::unique_lock<parcelport::mutex_type> l(pp_->fi_mutex_, std::try_to_lock);
+                if (l)
+                {
+                    ret = fi_recv(
+                        endpoint_,
+                        region_->get_address(),
+                        region_->get_size(),
+                        desc, 0, this);
+                }
+                else
+                {
+                    ret = -FI_EAGAIN;
+                }
+            }
+
 
             if (ret == -FI_EAGAIN)
             {

@@ -1,4 +1,5 @@
 //  Copyright (c) 2016 John Biddiscombe
+//  Copyright (c) 2017 Thomas Heller
 //
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -55,6 +56,11 @@
 # include "rdma/fi_ext_gni.h"
 #endif
 
+#ifdef HPX_PARCELPORT_LIBFABRIC_HAVE_PMI
+#include <pmi2.h>
+#include <plugins/parcelport/libfabric/base64.hpp>
+#endif
+
 namespace hpx {
 namespace parcelset {
 namespace policies {
@@ -89,6 +95,7 @@ namespace libfabric
         std::unordered_map<uint32_t, fi_addr_t> endpoint_av_;
 
         locality here_;
+        locality agas_;
 
         struct fi_info    *fabric_info_;
         struct fid_fabric *fabric_;
@@ -138,7 +145,82 @@ namespace libfabric
             create_event_queue();
 #endif
 
+            LOG_DEVEL_MSG("Calling boot PMI");
+            boot_PMI();
+
             FUNC_END_DEBUG_MSG;
+        }
+
+        void boot_PMI()
+        {
+#ifdef HPX_PARCELPORT_LIBFABRIC_HAVE_PMI
+            int spawned;
+            int size;
+            int rank;
+            int appnum;
+
+            LOG_DEVEL_MSG("Calling PMI init");
+            PMI2_Init(&spawned, &size, &rank, &appnum);
+            LOG_DEVEL_MSG("Called PMI init on rank" << decnumber(rank));
+
+            // create address vector and queues we need if bootstrapping
+            create_completion_queues(fabric_info_, size);
+
+            // we must pass out libfabric data to other nodes
+            // encode it as a string to put into the PMI KV store
+            constexpr int encoded_length = Base64::EncodedLength(locality::array_size);
+            char encoded_locality[encoded_length + 1] = {0};
+            Base64::Encode(static_cast<const char*>(here_.fabric_data()),
+                locality::array_size, encoded_locality, encoded_length);
+            LOG_DEVEL_MSG("Encoded locality as " << encoded_locality
+                << " with length " << decnumber(encoded_length));
+
+            // Key name for PMI
+            std::string pmi_key = "hpx_libfabric_" + std::to_string(rank);
+
+            // insert out data in the KV store
+            LOG_DEVEL_MSG("Calling PMI2_KVS_Put on rank " << decnumber(rank));
+            PMI2_KVS_Put(pmi_key.data(), encoded_locality);
+
+            // Wait for all to do the same
+            LOG_DEVEL_MSG("Calling PMI2_KVS_Fence on rank " << decnumber(rank));
+            PMI2_KVS_Fence();
+
+            // read libfabric data for all nodes and insert into our Address vector
+            for (int i = 0; i < size; ++i)
+            {
+                // read one locality key
+                std::string pmi_key = "hpx_libfabric_" + std::to_string(i);
+                char encoded_data[encoded_length + 1] = {0};
+                int length = 0;
+                PMI2_KVS_Get(0, i, pmi_key.data(), encoded_data, encoded_length + 1, &length);
+                if (length != encoded_length)
+                {
+                    LOG_ERROR_MSG("PMI value length mismatch, expected "
+                        << decnumber(encoded_length) << "got " << decnumber(length));
+                }
+
+                // decode the string back to raw locality data
+                LOG_DEVEL_MSG("Calling decode for " << decnumber(i)
+                    << " locality data on rank " << decnumber(rank));
+                locality new_locality;
+                Base64::Decode(encoded_data, encoded_length,
+                    ((char *)new_locality.fabric_data()), locality::array_size);
+
+                // insert locality into address vector
+                LOG_DEVEL_MSG("Calling insert_address for " << decnumber(i)
+                    << "on rank " << decnumber(rank));
+                insert_address(new_locality);
+                LOG_DEVEL_MSG("rank " << decnumber(i)
+                    << "added to address vector");
+                if (i == 0)
+                {
+                    agas_ = new_locality;
+                }
+            }
+
+            PMI2_Finalize();
+#endif
         }
 
         // --------------------------------------------------------------------
@@ -275,9 +357,10 @@ namespace libfabric
 #else
             bind_endpoint_to_queues(ep_passive_);
 #endif
+            pp_ = pp;
 
             // filling our vector of receivers...
-            std::size_t num_receivers = HPX_PARCELPORT_LIBFABRIC_MAX_PREPOSTS;
+            std::size_t num_receivers = HPX_PARCELPORT_LIBFABRIC_MAX_PREPOSTS * 2;
             receivers_.reserve(num_receivers);
             for(std::size_t i = 0; i != num_receivers; ++i)
             {
@@ -289,27 +372,26 @@ namespace libfabric
         // Special GNI extensions to disable memory registration cache
 
         // this helper function only works for string ops
-        void _set_check_domain_op_value(int op, char *value)
+        void _set_check_domain_op_value(int op, const char *value)
         {
 #ifdef HPX_PARCELPORT_LIBFABRIC_GNI
             int ret;
             struct fi_gni_ops_domain *gni_domain_ops;
-            char *get_val, *val;
+            char *get_val;
 
             ret = fi_open_ops(&fabric_domain_->fid, FI_GNI_DOMAIN_OPS_1,
                       0, (void **) &gni_domain_ops, NULL);
             if (ret) throw fabric_error(ret, "fi_open_ops");
             LOG_DEBUG_MSG("domain ops returned " << hexpointer(gni_domain_ops));
 
-            val = value;
             ret = gni_domain_ops->set_val(&fabric_domain_->fid,
-                    (dom_ops_val_t)(op), &val);
+                    (dom_ops_val_t)(op), &value);
             if (ret) throw fabric_error(ret, "set val (ops)");
 
             ret = gni_domain_ops->get_val(&fabric_domain_->fid,
                     (dom_ops_val_t)(op), &get_val);
             LOG_DEBUG_MSG("Cache mode set to " << get_val);
-            if (std::string(val) != std::string(get_val)) throw fabric_error(ret, "get val");
+            if (std::string(value) != std::string(get_val)) throw fabric_error(ret, "get val");
 #endif
         }
 
@@ -445,6 +527,8 @@ namespace libfabric
         void initialize_localities(hpx::agas::addressing_service &as)
         {
             FUNC_START_DEBUG_MSG;
+#ifndef HPX_PARCELPORT_LIBFABRIC_HAVE_PMI
+
             std::uint32_t N = hpx::get_config().get_num_localities();
             LOG_DEVEL_MSG("Parcelport initialize_localities with " << N << " localities");
 
@@ -465,6 +549,9 @@ namespace libfabric
                 // so that we can look it  up later
                 /*fi_addr_t dummy =*/ insert_address(loc);
             }
+#endif
+
+
             LOG_DEVEL_MSG("Done getting localities ");
             FUNC_END_DEBUG_MSG;
         }
@@ -526,121 +613,7 @@ namespace libfabric
 
         // --------------------------------------------------------------------
 //         int poll_for_work_completions(unique_lock& lock, bool stopped=false)
-        int poll_for_work_completions(bool stopped=false)
-        {
-            // @TODO, disable polling until queues are initialized to avoid this check
-            // if queues are not setup, don't poll
-            if (HPX_UNLIKELY(!rxcq_)) return 0;
-
-            int result = 0;
-
-            LOG_TIMED_INIT(poll);
-            LOG_TIMED_BLOCK(poll, DEVEL, 5.0,
-                {
-                    LOG_DEVEL_MSG("Polling work completion channel");
-                }
-            )
-/*
-struct fi_cq_msg_entry {
-    void     *op_context; // operation context
-    uint64_t flags;       // completion flags
-    size_t   len;         // size of received data
-};
-*/
-            //std::array<char, 256> buffer;
-            fi_addr_t src_addr;
-            fi_cq_msg_entry entry;
-            int ret = 0;
-            {
-                std::unique_lock<mutex_type> l(polling_mutex_, std::try_to_lock);
-                if (l)
-                    ret = fi_cq_read(txcq_, &entry, 1);
-            }
-            if (ret>0) {
-//                 hpx::util::unlock_guard_try<unique_lock> ul(lock);
-                //struct fi_cq_msg_entry *entry = (struct fi_cq_msg_entry *)(buffer.data());
-                LOG_DEVEL_MSG("Completion txcq wr_id "
-                    << fi_tostr(&entry.flags, FI_TYPE_OP_FLAGS) << " (" << decnumber(entry.flags) << ") "
-                    << hexpointer(entry.op_context) << "length " << hexuint32(entry.len));
-                if (entry.flags & FI_RMA) {
-                    LOG_DEBUG_MSG("Received a txcq RMA completion");
-                    rma_receiver* rcv = reinterpret_cast<rma_receiver*>(entry.op_context);
-                    rcv->handle_read_completion();
-                }
-                else if (entry.flags == (FI_MSG | FI_SEND)) {
-                    LOG_DEBUG_MSG("Received a txcq RMA send completion");
-                    sender* handler = reinterpret_cast<sender*>(entry.op_context);
-                    handler->handle_send_completion();
-                }
-                else {
-                    LOG_DEVEL_MSG("$$$$$ Received an unknown txcq completion ***** "
-                        << decnumber(entry.flags));
-//                     std::terminate();
-                }
-                result = 1;
-            }
-            else if (ret==0 || ret==-EAGAIN) {
-                // do nothing, we will try again on the next check
-                LOG_TIMED_MSG(poll, DEVEL, 5, "txcq EAGAIN");
-            }
-            else if (ret<0) {
-                struct fi_cq_err_entry e = {};
-                int err_sz = 0;
-                err_sz = fi_cq_readerr(txcq_, &e ,0);
-                LOG_ERROR_MSG("txcq Error with flags " << e.flags << " len " << e.len);
-                throw fabric_error(ret, "completion txcq read");
-            }
-
-//             if (!lock) return 0;
-
-            // receives will use fi_cq_readfrom as we want the source address
-            ret = 0;
-            {
-                std::unique_lock<mutex_type> l(polling_mutex_, std::try_to_lock);
-                if (l)
-                    ret = fi_cq_readfrom(rxcq_, &entry, 1, &src_addr);
-            }
-            if (ret>0) {
-                LOG_DEVEL_MSG("Completion rxcq wr_id "
-                    << fi_tostr(&entry.flags, FI_TYPE_OP_FLAGS) << " (" << decnumber(entry.flags) << ") "
-                    << " source " << hexpointer(src_addr)
-                    << "context " << hexpointer(entry.op_context)
-                    << "length " << hexuint32(entry.len));
-//                void *client = reinterpret_cast<libfabric_memory_region*>
-//                    (entry.op_context)->get_user_data();
-                if (src_addr == FI_ADDR_NOTAVAIL)
-                {
-                    LOG_DEVEL_MSG("Source address not available...\n");
-                    std::terminate();
-                }
-//                     if ((entry.flags & FI_RMA) == FI_RMA) {
-//                         LOG_DEVEL_MSG("Received an rxcq RMA completion");
-//                     }
-                else if (entry.flags == (FI_MSG | FI_RECV)) {
-                    LOG_DEVEL_MSG("Received an rxcq recv completion" << entry.op_context);
-                    reinterpret_cast<receiver *>(entry.op_context)->handle_recv(src_addr, entry.len);
-                }
-                else {
-                    LOG_DEVEL_MSG("Received an unknown rxcq completion "
-                        << decnumber(entry.flags));
-                    std::terminate();
-                }
-                result = 1;
-            }
-            else if (ret==0 || ret==-EAGAIN) {
-                // do nothing, we will try again on the next check
-                LOG_TIMED_MSG(poll, DEVEL, 5, "rxcq EAGAIN");
-            }
-            else if (ret<0) {
-                struct fi_cq_err_entry e = {};
-                int err_sz = 0;
-                err_sz = fi_cq_readerr(rxcq_, &e ,0);
-                LOG_ERROR_MSG("rxcq Error with flags " << e.flags << " len " << e.len);
-                throw fabric_error(ret, "completion rxcq read");
-            }
-
-            return result;
-        }
+        int poll_for_work_completions(bool stopped=false);
 
         // --------------------------------------------------------------------
         int poll_event_queue(bool stopped=false)
@@ -954,6 +927,8 @@ struct fi_cq_msg_entry {
         std::string           device_;
         std::string           interface_;
         sockaddr_in           local_addr_;
+
+        parcelport* pp_;
 
         // callback functions used for connection event handling
         ConnectionFunction    connection_function_;

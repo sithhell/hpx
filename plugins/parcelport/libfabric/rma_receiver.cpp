@@ -173,10 +173,20 @@ namespace libfabric
                 ssize_t ret = 0;
                 for (std::size_t k = 0; true; ++k)
                 {
-                    ret = fi_read(endpoint_,
-                        get_region->get_address(), c.size_, get_region->get_desc(),
-                        src_addr_,
-                        (uint64_t)(remoteAddr), c.rkey_, this);
+                    {
+                        std::unique_lock<parcelport::mutex_type> l(pp_->fi_mutex_, std::try_to_lock);
+                        if (l)
+                        {
+                            ret = fi_read(endpoint_,
+                                get_region->get_address(), c.size_, get_region->get_desc(),
+                                src_addr_,
+                                (uint64_t)(remoteAddr), c.rkey_, this);
+                        }
+                        else
+                        {
+                            ret = -FI_EAGAIN;
+                        }
+                    }
                     if (ret == -FI_EAGAIN)
                     {
                         LOG_DEVEL_MSG("reposting read...\n");
@@ -212,11 +222,21 @@ namespace libfabric
             ssize_t ret = 0;
             for (std::size_t k = 0; true; ++k)
             {
-                ret = fi_read(endpoint_,
-                    message_region_->get_address(), size, message_region_->get_desc(),
-                    src_addr_,
-                    (uint64_t)header_->get_message_rdma_addr(),
-                    header_->get_message_rdma_key(), this);
+                {
+                    std::unique_lock<parcelport::mutex_type> l(pp_->fi_mutex_, std::try_to_lock);
+                    if (l)
+                    {
+                        ret = fi_read(endpoint_,
+                            message_region_->get_address(), size, message_region_->get_desc(),
+                            src_addr_,
+                            (uint64_t)header_->get_message_rdma_addr(),
+                            header_->get_message_rdma_key(), this);
+                    }
+                    else
+                    {
+                        ret = -FI_EAGAIN;
+                    }
+                }
                 if (ret == -FI_EAGAIN)
                 {
                     LOG_DEVEL_MSG("reposting read...\n");
@@ -271,6 +291,7 @@ namespace libfabric
 
         HPX_ASSERT(rma_count_ == 0);
 
+        send_ack();
 
         std::size_t message_length = header_->size();
         char *message = nullptr;
@@ -295,7 +316,7 @@ namespace libfabric
         rcv_data_type wrapped_pointer(message, message_length,
             [this]()
             {
-                send_ack();
+//                 send_ack();
                 for (auto region: rma_regions_)
                     memory_pool_->deallocate(region);
                 rma_regions_.clear();
@@ -328,6 +349,7 @@ namespace libfabric
         buffer.data_size_ = header_->size();
 //         buffer.chunks_.resize(chunks_.size());
         std::size_t num_thread = hpx::get_worker_thread_num();
+
         decode_message_with_chunks(*pp_, std::move(buffer), 1, chunks_, num_thread);
         LOG_DEVEL_MSG("parcel decode called for ZEROCOPY complete parcel");
     }
@@ -344,7 +366,17 @@ namespace libfabric
         for (std::size_t k = 0; true; ++k)
         {
             std::uint64_t tag = header_->tag();
-            ret = fi_inject(endpoint_, &tag, sizeof(std::uint64_t), src_addr_);
+            {
+                std::unique_lock<parcelport::mutex_type> l(pp_->fi_mutex_, std::try_to_lock);
+                if (l)
+                {
+                    ret = fi_inject(endpoint_, &tag, sizeof(std::uint64_t), src_addr_);
+                }
+                else
+                {
+                    ret = -FI_EAGAIN;
+                }
+            }
             if (ret == -FI_EAGAIN)
             {
                 LOG_DEVEL_MSG("reposting inject...\n");

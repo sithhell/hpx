@@ -126,6 +126,7 @@ namespace libfabric
 
         // when terminating the parcelport, this is used to restrict access
         mutex_type  stop_mutex;
+        mutex_type  fi_mutex_;
 
         boost::lockfree::stack<
             sender*,
@@ -209,6 +210,8 @@ namespace libfabric
         // is used to poll for events, messages on the libfabric connection
         // --------------------------------------------------------------------
         bool background_work(std::size_t num_thread);
+
+        void io_service_work();
     };
 }}}}
 
@@ -256,6 +259,10 @@ struct plugin_config_data<hpx::parcelset::policies::libfabric::parcelport> {
     // for example check for availability of devices etc.
     static void init(int *argc, char ***argv, util::command_line_handling &cfg) {
         FUNC_START_DEBUG_MSG;
+
+#ifdef HPX_PARCELPORT_LIBFABRIC_HAVE_PMI
+        cfg.ini_config_.push_back("hpx.parcel.bootstrap!=libfabric");
+#endif
 
         FUNC_END_DEBUG_MSG;
     }

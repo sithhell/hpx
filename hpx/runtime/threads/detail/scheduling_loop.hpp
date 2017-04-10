@@ -314,7 +314,7 @@ namespace hpx { namespace threads { namespace detail
                 return thread_result_type(terminated, nullptr);
             },
             hpx::util::thread_description("background_work"),
-            0,
+            threads::get_stack_size(threads::thread_stacksize_huge),
             thread_priority_critical,
             num_thread,
             std::size_t(-1),
