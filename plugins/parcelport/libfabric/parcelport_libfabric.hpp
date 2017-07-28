@@ -105,7 +105,7 @@ namespace libfabric
         // main vars used to manage the RDMA controller and interface
         // These are called from a static function, so use static
         // --------------------------------------------------------------------
-        libfabric_controller_ptr libfabric_controller_;
+        std::shared_ptr<libfabric_controller> libfabric_controller_;
 
         // our local ip address (estimated based on fabric PP address info)
         uint32_t ip_addr_;
@@ -272,8 +272,6 @@ struct plugin_config_data<hpx::parcelset::policies::libfabric::parcelport> {
                 HPX_PARCELPORT_LIBFABRIC_PROVIDER "}\n"
         "domain = ${HPX_PARCELPORT_LIBFABRIC_DOMAIN:"
                 HPX_PARCELPORT_LIBFABRIC_DOMAIN "}\n"
-        "endpoint = ${HPX_PARCELPORT_LIBFABRIC_ENDPOINT:"
-                HPX_PARCELPORT_LIBFABRIC_ENDPOINT "}\n"
         ;
     }
 };

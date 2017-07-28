@@ -17,13 +17,16 @@
 
 // Different providers use different address formats that we must accomodate
 // in our locality object.
-#ifdef HPX_PARCELPORT_LIBFABRIC_GNI
+#if defined(HPX_PARCELPORT_LIBFABRIC_GNI)
 # define HPX_PARCELPORT_LIBFABRIC_LOCALITY_SIZE 48
 #endif
 
+#if defined(HPX_PARCELPORT_LIBFABRIC_PSM2)
+# define HPX_PARCELPORT_LIBFABRIC_LOCALITY_SIZE 16
+#endif
+
 #if defined(HPX_PARCELPORT_LIBFABRIC_VERBS) || \
-    defined(HPX_PARCELPORT_LIBFABRIC_SOCKETS) || \
-    defined(HPX_PARCELPORT_LIBFABRIC_PSM2)
+    defined(HPX_PARCELPORT_LIBFABRIC_SOCKETS)
 # define HPX_PARCELPORT_LIBFABRIC_LOCALITY_SIZE 16
 # define HPX_PARCELPORT_LIBFABRIC_LOCALITY_SOCKADDR
 #endif
@@ -97,7 +100,7 @@ struct locality {
 #if defined (HPX_PARCELPORT_LIBFABRIC_LOCALITY_SOCKADDR)
         return reinterpret_cast<const struct sockaddr_in*>
             (data_.data())->sin_addr.s_addr;
-#elif defined(HPX_PARCELPORT_LIBFABRIC_GNI)
+#elif defined(HPX_PARCELPORT_LIBFABRIC_GNI) || defined(HPX_PARCELPORT_LIBFABRIC_PSM2)
         return data_[0];
 #else
         throw fabric_error(0, "unsupported fabric provider, please fix ASAP");
@@ -108,7 +111,7 @@ struct locality {
 #if defined (HPX_PARCELPORT_LIBFABRIC_LOCALITY_SOCKADDR)
         return reinterpret_cast<const struct sockaddr_in*>
             (&data)->sin_addr.s_addr;
-#elif defined(HPX_PARCELPORT_LIBFABRIC_GNI)
+#elif defined(HPX_PARCELPORT_LIBFABRIC_GNI) || defined(HPX_PARCELPORT_LIBFABRIC_PSM2)
         return data[0];
 #else
         throw fabric_error(0, "unsupported fabric provider, please fix ASAP");

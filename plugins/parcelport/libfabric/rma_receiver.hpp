@@ -10,6 +10,7 @@
 #include <plugins/parcelport/libfabric/libfabric_region_provider.hpp>
 #include <plugins/parcelport/performance_counter.hpp>
 #include <plugins/parcelport/rma_memory_pool.hpp>
+#include <plugins/parcelport/libfabric/context.hpp>
 #include <plugins/parcelport/libfabric/header.hpp>
 #include <plugins/parcelport/libfabric/rma_base.hpp>
 //
@@ -131,6 +132,7 @@ namespace libfabric
         performance_counter<unsigned int> rma_reads_;
         performance_counter<unsigned int> recv_deletes_;
 
+        context<rma_base> fi_context_;
     };
 }}}}
 

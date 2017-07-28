@@ -9,6 +9,9 @@
 
 #include <plugins/parcelport/libfabric/header.hpp>
 #include <plugins/parcelport/libfabric/libfabric_region_provider.hpp>
+#include <plugins/parcelport/performance_counter.hpp>
+#include <plugins/parcelport/rma_memory_pool.hpp>
+#include <plugins/parcelport/libfabric/context.hpp>
 #include <plugins/parcelport/libfabric/pinned_memory_vector.hpp>
 #include <plugins/parcelport/libfabric/rma_base.hpp>
 #include <plugins/parcelport/performance_counter.hpp>
@@ -69,6 +72,7 @@ namespace libfabric
             header_region_ =
                 memory_pool_->allocate_region(memory_pool_->small_.chunk_size());
             LOG_DEBUG_MSG("Create sender: " << hexpointer(this));
+            fi_context_.this_ = this;
         }
 
         // --------------------------------------------------------------------
@@ -144,6 +148,7 @@ namespace libfabric
         //
         struct iovec region_list_[2];
         void        *desc_[2];
+        context<rma_base> fi_context_;
     };
 }}}}
 

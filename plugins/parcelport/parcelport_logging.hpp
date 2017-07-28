@@ -121,31 +121,10 @@ namespace detail {
     // ------------------------------------------------------------------
     // helper fuction for printing CRC32
     // ------------------------------------------------------------------
-    inline uint32_t crc32(const void *address, size_t length)
-    {
-        boost::crc_32_type result;
-        result.process_bytes(address, length);
-        return result.checksum();
-    }
 
     // ------------------------------------------------------------------
     // helper fuction for printing CRC32 and short memory dump
     // ------------------------------------------------------------------
-    inline std::string mem_crc32(
-        const void* address, size_t length, const char* txt)
-    {
-        const uint64_t *uintBuf = static_cast<const uint64_t*>(address);
-        std::stringstream temp;
-        temp << "Memory: ";
-        temp << "address " << hexpointer(address)
-             << "length " << hexuint32(length)
-             << "CRC32: " << hexuint32(crc32(address,length));
-        for (size_t i=0; i < (std::min)(length/8, size_t(128)); i++) {
-            temp << hexuint64(*uintBuf++);
-        }
-        temp << ": " << txt;
-        return temp.str();
-    }
 
 }}}}}
 

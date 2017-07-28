@@ -10,6 +10,7 @@
 #include <plugins/parcelport/libfabric/libfabric_region_provider.hpp>
 #include <plugins/parcelport/performance_counter.hpp>
 #include <plugins/parcelport/rma_memory_pool.hpp>
+#include <plugins/parcelport/libfabric/context.hpp>
 #include <plugins/parcelport/libfabric/header.hpp>
 #include <plugins/parcelport/libfabric/rma_receiver.hpp>
 //
@@ -41,7 +42,7 @@ namespace libfabric
 
         // --------------------------------------------------------------------
         // construct receive object
-        receiver(parcelport* pp, fid_ep* endpoint,
+        receiver(parcelport* pp, fid_ep* tx_endpoint, fid_ep* rx_endpoint,
                  rma_memory_pool<region_provider>& memory_pool);
 
         // --------------------------------------------------------------------
@@ -49,6 +50,8 @@ namespace libfabric
         // they should not be used
         receiver(receiver&& other);
         receiver& operator=(receiver&& other);
+        receiver(receiver const& other);
+        receiver& operator=(receiver const& other);
 
         // --------------------------------------------------------------------
         // destruct receive object
@@ -74,7 +77,8 @@ namespace libfabric
 
     private:
         parcelport                       *pp_;
-        fid_ep                           *endpoint_;
+        fid_ep                           *tx_endpoint_;
+        fid_ep                           *rx_endpoint_;
         region_type                      *header_region_ ;
         rma_memory_pool<region_provider>  *memory_pool_;
         //
@@ -99,6 +103,7 @@ namespace libfabric
         mutex_type active_receivers_mtx_;
         hpx::lcos::local::detail::condition_variable active_receivers_cv_;
         hpx::util::atomic_count active_receivers_;
+        context<receiver> fi_context_;
     };
 }}}}
 

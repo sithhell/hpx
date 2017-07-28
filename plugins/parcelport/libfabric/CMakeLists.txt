@@ -111,10 +111,6 @@ hpx_add_config_define_namespace(
     VALUE  "\"${HPX_PARCELPORT_LIBFABRIC_DOMAIN}\""
     NAMESPACE parcelport)
 
-hpx_option(HPX_PARCELPORT_LIBFABRIC_ENDPOINT STRING
-  "The libfabric endpoint type (leave blank for default"
-  "rdm" CATEGORY "Parcelport" ADVANCED)
-
 hpx_add_config_define_namespace(
     DEFINE HPX_PARCELPORT_LIBFABRIC_ENDPOINT
     VALUE  "\"${HPX_PARCELPORT_LIBFABRIC_ENDPOINT}\""
@@ -260,6 +256,7 @@ include(HPX_AddLibrary)
 
 set(_parcelport_CXX_srcs
   "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/parcelport_libfabric.cpp"
+  "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/libfabric_controller.cpp"
   "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/receiver.cpp"
   "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/rma_receiver.cpp"
   "${PROJECT_SOURCE_DIR}/plugins/parcelport/libfabric/sender.cpp"

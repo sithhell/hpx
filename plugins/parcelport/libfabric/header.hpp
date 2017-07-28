@@ -114,9 +114,9 @@ namespace libfabric
             }
             else
             {
-                LOG_DEBUG_MSG("Too many chunks for header "
-                    << decnumber(chunks.size())
-                    << "requires bytes " << decnumber(chunkbytes));
+//                 LOG_DEBUG_MSG("Too many chunks for header "
+//                     << decnumber(chunks.size())
+//                     << "requires bytes " << decnumber(chunkbytes));
                 message_header.flags &= ~chunk_flag;
                 message_header.flags |= zerocopy_flag;
                 // send just rma-get information, address and rma key will be added later
@@ -150,9 +150,9 @@ namespace libfabric
                     // so we must add rma-get information for the message
                     detail::message_chunk *mc = reinterpret_cast<detail::message_chunk*>
                         (&data_[message_info_offset()]);
-                    LOG_DEBUG_MSG("Setting chunk free message size to "
-                        << decnumber(buffer.size_)
-                        << "offset " << decnumber(message_info_offset()));
+//                     LOG_DEBUG_MSG("Setting chunk free message size to "
+//                         << decnumber(buffer.size_)
+//                         << "offset " << decnumber(message_info_offset()));
                     mc->message_rma =
                         serialization::create_pointer_chunk(nullptr, buffer.size_, 0);
                 }
@@ -164,7 +164,7 @@ namespace libfabric
                 ptr->tag = reinterpret_cast<uint64_t>(tag);
             }
 
-            LOG_DEBUG_MSG("Header : " << *this);
+//             LOG_DEBUG_MSG("Header : " << *this);
         }
 
         // --------------------------------------------------------------------
@@ -330,9 +330,9 @@ namespace libfabric
             chunktype *chunks = reinterpret_cast<chunktype *>(chunk_ptr());
             if (!chunks) {
                 detail::message_chunk *mc = message_chunk_ptr();
-                LOG_DEBUG_MSG("chunk free message size is "
-                    << decnumber(mc->message_rma.size_)
-                    << "offset was " << decnumber(message_info_offset()));
+//                 LOG_DEBUG_MSG("chunk free message size is "
+//                     << decnumber(mc->message_rma.size_)
+//                     << "offset was " << decnumber(message_info_offset()));
                 return mc->message_rma.size_;
             }
             return chunks[message_header.num_chunks-1].size_;

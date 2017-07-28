@@ -15,6 +15,7 @@
 #if defined(__linux) || defined(linux) || defined(__linux__)
 
 #include <hpx/config.hpp>
+#include <hpx/runtime/config_entry.hpp>
 #include <hpx/runtime/threads/coroutines/detail/get_stack_pointer.hpp>
 #include <hpx/runtime/threads/coroutines/detail/posix_utility.hpp>
 #include <hpx/runtime/threads/coroutines/detail/swap_context.hpp>
@@ -253,6 +254,7 @@ namespace hpx { namespace threads { namespace coroutines
                     << std::internal << std::hex
                     << std::setw(sizeof(addr)*2+2)
                     << std::setfill('0') << static_cast<int*>(addr)
+                    << std::dec
                     << ".\n\n";
 
                 std::cerr

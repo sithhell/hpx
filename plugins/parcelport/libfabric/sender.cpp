@@ -153,7 +153,7 @@ namespace libfabric
             // send 2 regions as one message, goes into one receive
             for (std::size_t k = 0; true; ++k)
             {
-                ret = fi_sendv(endpoint_, region_list_, desc_, 2, dst_addr_, this);
+                ret = fi_sendv(endpoint_, region_list_, desc_, 2, dst_addr_, &fi_context_);
                 if (ret == -FI_EAGAIN) {
                     LOG_ERROR_MSG("reposting fi_sendv...\n");
                     hpx::util::detail::yield_k(k,
@@ -185,7 +185,7 @@ namespace libfabric
             // send just the header region - a single message
             for (std::size_t k = 0; true; ++k) {
                 ret = fi_send(endpoint_, region_list_[0].iov_base,
-                    region_list_[0].iov_len, desc_[0], dst_addr_, this);
+                    region_list_[0].iov_len, desc_[0], dst_addr_, &fi_context_);
                 if (ret == -FI_EAGAIN) {
                     LOG_ERROR_MSG("reposting fi_send...\n");
                     hpx::util::detail::yield_k(k,
@@ -269,7 +269,7 @@ namespace libfabric
             // send 2 regions as one message, goes into one receive
             for (std::size_t k = 0; true; ++k)
             {
-                ret = fi_sendv(endpoint_, region_list_, desc_, 2, dst_addr_, this);
+                ret = fi_sendv(endpoint_, region_list_, desc_, 2, dst_addr_, &fi_context_);
                 if (ret == -FI_EAGAIN) {
                     LOG_ERROR_MSG("reposting fi_sendv...\n");
                     hpx::util::detail::yield_k(k,
@@ -288,7 +288,7 @@ namespace libfabric
             // send just the header region - a single message
             for (std::size_t k = 0; true; ++k) {
                 ret = fi_send(endpoint_, region_list_[0].iov_base,
-                    region_list_[0].iov_len, desc_[0], dst_addr_, this);
+                    region_list_[0].iov_len, desc_[0], dst_addr_, &fi_context_);
                 if (ret == -FI_EAGAIN) {
                     LOG_ERROR_MSG("reposting fi_send...\n");
                     hpx::util::detail::yield_k(k,

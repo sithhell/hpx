@@ -40,7 +40,9 @@ namespace libfabric
       , handler_(std::move(handler))
       , rma_count_(0)
       , chunk_fetch_(false)
-    {}
+    {
+        fi_context_.this_ = this;
+    }
 
     // --------------------------------------------------------------------
     rma_receiver::~rma_receiver()
@@ -314,9 +316,9 @@ namespace libfabric
                 uint32_t *buffer =
                     reinterpret_cast<uint32_t*>(get_region->get_address());
                 std::fill(buffer, buffer + get_region->get_size()/4, 0xDEADC0DE);
-                LOG_TRACE_MSG(
-                    CRC32_MEM(get_region->get_address(), c.size_,
-                        "(RDMA GET region (pre-fi_read))"));
+//                 LOG_TRACE_MSG(
+//                     CRC32_MEM(get_region->get_address(), c.size_,
+//                         "(RDMA GET region (pre-fi_read))"));
             );
 
             ret = fi_read(endpoint_,
@@ -324,7 +326,7 @@ namespace libfabric
                 get_region->get_message_length(),
                 get_region->get_desc(),
                 src_addr_,
-                (uint64_t)(remoteAddr), rkey, this);
+                (uint64_t)(remoteAddr), rkey, &fi_context_);
             if (ret == -FI_EAGAIN)
             {
                 LOG_ERROR_MSG("receiver " << hexpointer(this)
@@ -417,6 +419,7 @@ namespace libfabric
 
         for (auto &r : rma_regions_)
         {
+            (void)r;
             LOG_TRACE_MSG(CRC32_MEM(r->get_address(), r->get_message_length(),
                 "rdma region (recv) "));
         }

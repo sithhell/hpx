@@ -122,15 +122,13 @@ namespace libfabric
             HPX_PARCELPORT_LIBFABRIC_PROVIDER);
         std::string domain = ini.get_entry("hpx.parcel.libfabric.domain",
             HPX_PARCELPORT_LIBFABRIC_DOMAIN);
-        std::string endpoint = ini.get_entry("hpx.parcel.libfabric.endpoint",
-            HPX_PARCELPORT_LIBFABRIC_ENDPOINT);
 
         LOG_DEBUG_MSG("libfabric parcelport function using attributes "
-            << provider << " " << domain << " " << endpoint);
+            << provider << " " << domain);
 
         // create our main fabric control structure
         libfabric_controller_ = std::make_shared<libfabric_controller>(
-            provider, domain, endpoint);
+            provider, domain);
 
         // get 'this' locality from the controller
         LOG_DEBUG_MSG("Getting local locality object");
@@ -174,7 +172,7 @@ namespace libfabric
         {
             sender *snd =
                new sender(this,
-                    libfabric_controller_->ep_active_,
+                    libfabric_controller_->tx_endpoint_[0],
                     libfabric_controller_->get_domain(),
                     chunk_pool_);
             snd->postprocess_handler_ = [this](sender* s)
@@ -266,7 +264,7 @@ namespace libfabric
             acks_received += snd->acks_received_;
             delete snd;
         }
-        LOG_DEBUG_MSG(
+        LOG_DEBUG_MSG(""
             << "sends_posted "  << decnumber(sends_posted)
             << "sends_deleted " << decnumber(sends_posted)
             << "acks_received " << decnumber(acks_received)
@@ -338,25 +336,6 @@ namespace libfabric
     void parcelport::do_stop() {
         LOG_DEBUG_MSG("Entering libfabric stop ");
         FUNC_START_DEBUG_MSG;
-        if (!stopped_) {
-            // we don't want multiple threads trying to stop the clients
-            scoped_lock lock(stop_mutex);
-
-            LOG_DEBUG_MSG("Removing all initiated connections");
-            libfabric_controller_->disconnect_all();
-
-            // wait for all clients initiated elsewhere to be disconnected
-            while (libfabric_controller_->active() /*&& !hpx::is_stopped()*/) {
-                completions_handled_ += libfabric_controller_->poll_endpoints(true);
-                LOG_TIMED_INIT(disconnect_poll);
-                LOG_TIMED_BLOCK(disconnect_poll, DEVEL, 5.0,
-                    {
-                        LOG_DEBUG_MSG("Polling before shutdown");
-                    }
-                )
-            }
-            LOG_DEBUG_MSG("stopped removing clients and terminating");
-        }
         stopped_ = true;
         // Stop receiving and sending of parcels
     }

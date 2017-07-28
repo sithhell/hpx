@@ -28,18 +28,21 @@ namespace policies {
 namespace libfabric
 {
     // --------------------------------------------------------------------
-    receiver::receiver(parcelport* pp, fid_ep* endpoint,
+    receiver::receiver(parcelport* pp, fid_ep* tx_endpoint, fid_ep* rx_endpoint,
         rma_memory_pool<region_provider>& memory_pool)
         : pp_(pp)
-        , endpoint_(endpoint)
+        , tx_endpoint_(tx_endpoint)
+        , rx_endpoint_(rx_endpoint)
         , header_region_(memory_pool.allocate_region(memory_pool.small_.chunk_size()))
         , memory_pool_(&memory_pool)
         , messages_handled_(0)
         , acks_received_(0)
         , active_receivers_(0)
     {
+        HPX_ASSERT(header_region_);
         LOG_DEBUG_MSG("created receiver: " << hexpointer(this));
         // Once constructed, we need to post the receive...
+        fi_context_.this_ = this;
         pre_post_receive();
     }
 
@@ -53,6 +56,18 @@ namespace libfabric
     receiver& receiver::operator=(receiver&& other)
     {
         std::terminate();
+        return *this;
+    }
+
+    receiver::receiver(receiver const& other)
+        : active_receivers_(0)
+    {
+        std::terminate();
+    }
+    receiver& receiver::operator=(receiver const& other)
+    {
+        std::terminate();
+        return *this;
     }
 
     // --------------------------------------------------------------------
@@ -129,7 +144,6 @@ namespace libfabric
             // potentially block all background threads.
             const long max_receivers =
                 HPX_PARCELPORT_LIBFABRIC_MAX_PREPOSTS;
-            std::size_t k = 0;
             if (threads::threadmanager_is_at_least(state_running)
                 && hpx::threads::get_self_ptr())
             {
@@ -140,7 +154,7 @@ namespace libfabric
                 }
             }
 
-            recv = new rma_receiver(pp_, endpoint_, memory_pool_, std::move(f));
+            recv = new rma_receiver(pp_, tx_endpoint_, memory_pool_, std::move(f));
         }
         ++active_receivers_;
 
@@ -148,8 +162,10 @@ namespace libfabric
 
         // We save the received region and swap it with a newly allocated one
         // so that we can post a recv again as soon as possible.
+        HPX_ASSERT(header_region_);
         region_type* region = header_region_;
         header_region_ = memory_pool_->allocate_region(memory_pool_->small_.chunk_size());
+        HPX_ASSERT(header_region_);
         pre_post_receive();
 
         // we dispatch our work to our rma_receiver once it completed the
@@ -175,10 +191,10 @@ namespace libfabric
             // post a receive using 'this' as the context, so that this receiver object
             // can be used to handle the incoming receive/request
             ret = fi_recv(
-                endpoint_,
+                rx_endpoint_,
                 header_region_->get_address(),
                 header_region_->get_size(),
-                desc, 0, this);
+                desc, 0, &fi_context_);
 
             if (ret == -FI_EAGAIN)
             {
