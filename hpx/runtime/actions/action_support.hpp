@@ -20,8 +20,8 @@
 #include <hpx/runtime/threads/thread_helpers.hpp>
 #include <hpx/runtime/threads/thread_init_data.hpp>
 #include <hpx/traits/action_remote_result.hpp>
-#include <hpx/util/detail/pp/cat.hpp>
-#include <hpx/util/detail/pp/nargs.hpp>
+#include <hpx/pp/cat.hpp>
+#include <hpx/pp/nargs.hpp>
 #include <hpx/util/tuple.hpp>
 #include <hpx/util/debug/demangle_helper.hpp>
 #if HPX_HAVE_ITTNOTIFY != 0 && !defined(HPX_HAVE_APEX)

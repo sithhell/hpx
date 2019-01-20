@@ -10,7 +10,7 @@
 
 #include <hpx/config.hpp>
 #include <hpx/util/assert.hpp>
-#include <hpx/util/detail/pp/stringize.hpp>
+#include <hpx/pp/stringize.hpp>
 
 #include <boost/current_function.hpp>
 #include <boost/io/ios_state.hpp>

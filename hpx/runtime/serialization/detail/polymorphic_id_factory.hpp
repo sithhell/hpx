@@ -14,7 +14,7 @@
 #include <hpx/throw_exception.hpp>
 #include <hpx/traits/polymorphic_traits.hpp>
 #include <hpx/util/assert.hpp>
-#include <hpx/util/detail/pp/stringize.hpp>
+#include <hpx/pp/stringize.hpp>
 #include <hpx/util/static.hpp>
 
 #include <cstdint>

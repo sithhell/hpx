@@ -23,7 +23,7 @@
 #include <hpx/traits/future_traits.hpp>
 #include <hpx/traits/is_continuation.hpp>
 #include <hpx/util/decay.hpp>
-#include <hpx/util/detail/pp/stringize.hpp>
+#include <hpx/pp/stringize.hpp>
 #include <hpx/util/logging.hpp>
 #include <hpx/util/unique_function.hpp>
 

@@ -10,8 +10,8 @@
 
 #include <hpx/config.hpp>
 #include <hpx/util/debug/demangle_helper.hpp>
-#include <hpx/util/detail/pp/stringize.hpp>
-#include <hpx/util/detail/pp/strip_parens.hpp>
+#include <hpx/pp/stringize.hpp>
+#include <hpx/pp/strip_parens.hpp>
 
 #include <type_traits>
 

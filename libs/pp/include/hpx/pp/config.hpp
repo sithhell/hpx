@@ -15,8 +15,8 @@
 
 /* See http://www.boost.org for most recent version. */
 
-# ifndef HPX_UTIL_DETAIL_CONFIG_HPP
-# define HPX_UTIL_DETAIL_CONFIG_HPP
+# ifndef HPX_PP_CONFIG_HPP
+# define HPX_PP_CONFIG_HPP
 #
 # /* HPX_PP_CONFIG_FLAGS */
 #

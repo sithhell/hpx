@@ -12,10 +12,10 @@
 
 // hpxinspect:noinclude:HPX_PP_CAT
 
-#ifndef HPX_UTIL_DETAIL_CAT_HPP_INCLUDED
-#define HPX_UTIL_DETAIL_CAT_HPP_INCLUDED
+#ifndef HPX_PP_CAT_HPP
+#define HPX_PP_CAT_HPP
 
-#include <hpx/util/detail/pp/config.hpp>
+#include <hpx/pp/config.hpp>
 
 # if ~HPX_PP_CONFIG_FLAGS() & HPX_PP_CONFIG_MWCC()
 #    define HPX_PP_CAT(a, b) HPX_PP_CAT_I(a, b)

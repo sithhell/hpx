@@ -8,7 +8,7 @@
 
 #include <hpx/config.hpp>
 #include <hpx/runtime/components/component_startup_shutdown_base.hpp>
-#include <hpx/util/detail/pp/cat.hpp>
+#include <hpx/pp/cat.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace hpx { namespace components

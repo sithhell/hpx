@@ -18,10 +18,10 @@
 
 // hpxinspect:noinclude:HPX_PP_STRINGIZE
 
-# ifndef HPX_UTIL_DETAIL_STRINGIZE_HPP
-# define HPX_UTIL_DETAIL_STRINGIZE_HPP
+# ifndef HPX_PP_STRINGIZE_HPP
+# define HPX_PP_STRINGIZE_HPP
 
-# include <hpx/util/detail/pp/config.hpp>
+# include <hpx/pp/config.hpp>
 
 # /* HPX_PP_STRINGIZE */
 

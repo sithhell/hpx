@@ -9,7 +9,7 @@
 
 #include <hpx/traits/has_member_xxx.hpp>
 #include <hpx/traits/has_xxx.hpp>
-#include <hpx/util/detail/pp/strip_parens.hpp>
+#include <hpx/pp/strip_parens.hpp>
 
 #include <type_traits>
 

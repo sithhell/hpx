@@ -10,10 +10,10 @@
 
 // hpxinspect:noinclude:HPX_PP_STRIP_PARENS
 
-#ifndef HPX_PP_DETAIL_STRIP_PARENS_HPP_INCLUDED
-#define HPX_PP_DETAIL_STRIP_PARENS_HPP_INCLUDED
+#ifndef HPX_PP_STRIP_PARENS_HPP
+#define HPX_PP_STRIP_PARENS_HPP
 
-#include <hpx/util/detail/pp/cat.hpp>
+#include <hpx/pp/cat.hpp>
 
 /*!
  * \file

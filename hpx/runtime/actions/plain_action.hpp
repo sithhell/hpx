@@ -15,11 +15,11 @@
 #include <hpx/runtime/naming/address.hpp>
 #include <hpx/traits/component_type_database.hpp>
 #include <hpx/util/assert.hpp>
-#include <hpx/util/detail/pp/cat.hpp>
-#include <hpx/util/detail/pp/expand.hpp>
-#include <hpx/util/detail/pp/nargs.hpp>
+#include <hpx/pp/cat.hpp>
+#include <hpx/pp/expand.hpp>
+#include <hpx/pp/nargs.hpp>
 #include <hpx/util/detail/pack.hpp>
-#include <hpx/util/detail/pp/strip_parens.hpp>
+#include <hpx/pp/strip_parens.hpp>
 #include <hpx/util/unused.hpp>
 
 #include <cstdlib>

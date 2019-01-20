@@ -10,7 +10,7 @@
 
 #include <hpx/runtime/actions_fwd.hpp>
 #include <hpx/runtime/actions/action_support.hpp>
-#include <hpx/util/detail/pp/stringize.hpp>
+#include <hpx/pp/stringize.hpp>
 
 #include <cstdint>
 #include <string>
