@@ -45,7 +45,7 @@ Setup
 
 The source code for this example can be found here:
 :download:`accumulator_client.cpp
-<../../examples/accumulators/accumulator_client.cpp>`.
+<../../../examples/accumulators/accumulator_client.cpp>`.
 
 To compile this program, go to your |hpx| build directory (see
 :ref:`hpx_build_system` for information on configuring and building |hpx|) and
@@ -88,7 +88,7 @@ example consists of two parts: an |hpx| component library (a library that
 exposes an |hpx| component) and a client application which uses the library.
 This walkthrough will cover the |hpx| component library. The code for the client
 application can be found here: :download:`accumulator_client.cpp
-<../../examples/accumulators/accumulator_client.cpp>`.
+<../../../examples/accumulators/accumulator_client.cpp>`.
 
 An |hpx| component is represented by two C++ classes:
 
@@ -107,7 +107,7 @@ The server class
 ----------------
 
 The following code is from: :download:`accumulator.hpp
-<../../examples/accumulators/server/accumulator.hpp>`.
+<../../../examples/accumulators/server/accumulator.hpp>`.
 
 All |hpx| component server classes must inherit publicly from the |hpx|
 component base class: :cpp:class:`hpx::components::component_base`
@@ -122,37 +122,37 @@ because it also inherits from :cpp:class:`hpx::components::component_base` (the
 template argument passed to locking_hook is used as its base class). The
 following snippet shows the corresponding code:
 
-.. literalinclude:: ../../examples/accumulators/server/accumulator.hpp
+.. literalinclude:: ../../../examples/accumulators/server/accumulator.hpp
    :lines: 45-47
 
 Our accumulator class will need a data member to store its value in, so let's
 declare a data member:
 
-.. literalinclude:: ../../examples/accumulators/server/accumulator.hpp
+.. literalinclude:: ../../../examples/accumulators/server/accumulator.hpp
    :lines: 95
 
 The constructor for this class simply initializes ``value_`` to 0:
 
-.. literalinclude:: ../../examples/accumulators/server/accumulator.hpp
+.. literalinclude:: ../../../examples/accumulators/server/accumulator.hpp
    :lines: 54
 
 Next, let's look at the three methods of this component that we will be exposing
 as component actions:
 
-.. literalinclude:: ../../examples/accumulators/server/accumulator.hpp
+.. literalinclude:: ../../../examples/accumulators/server/accumulator.hpp
    :lines: 61-80
 
 Here are the action types. These types wrap the methods we're exposing. The
 wrapping technique is very similar to the one used in the
 :ref:`examples_fibonacci` and the :ref:`examples_hello_world`:
 
-.. literalinclude:: ../../examples/accumulators/server/accumulator.hpp
+.. literalinclude:: ../../../examples/accumulators/server/accumulator.hpp
    :lines: 88-90
 
 The last piece of code in the server class header is the declaration of the
 action type registration code:
 
-.. literalinclude:: ../../examples/accumulators/server/accumulator.hpp
+.. literalinclude:: ../../../examples/accumulators/server/accumulator.hpp
    :lines: 101-111
 
 .. note::
@@ -160,9 +160,9 @@ action type registration code:
    The code above must be placed in the global namespace.
 
 The rest of the registration code is in
-:download:`accumulator.cpp <../../examples/accumulators/accumulator.cpp>`
+:download:`accumulator.cpp <../../../examples/accumulators/accumulator.cpp>`
 
-.. literalinclude:: ../../examples/accumulators/accumulator.cpp
+.. literalinclude:: ../../../examples/accumulators/accumulator.cpp
    :lines: 13-34
 
 .. note::
@@ -173,7 +173,7 @@ The client class
 ----------------
 
 The following code is from :download:`accumulator.hpp
-<../../examples/accumulators/accumulator.hpp>`.
+<../../../examples/accumulators/accumulator.hpp>`.
 
 The client class is the primary interface to a component instance. Client classes
 are used to create components::
@@ -188,12 +188,12 @@ and to invoke component actions::
 Clients, like servers, need to inherit from a base class, this time,
 :cpp:class:`hpx::components::client_base`:
 
-.. literalinclude:: ../../examples/accumulators/accumulator.hpp
+.. literalinclude:: ../../../examples/accumulators/accumulator.hpp
    :lines: 22-25
 
 For readability, we typedef the base class like so:
 
-.. literalinclude:: ../../examples/accumulators/accumulator.hpp
+.. literalinclude:: ../../../examples/accumulators/accumulator.hpp
    :lines: 29-31
 
 Here are examples of how to expose actions through a client class:
@@ -206,7 +206,7 @@ There are a few different ways of invoking actions:
   the action, we forget about it completely and continue with our computation.
   We use :cpp:func:`hpx::apply` to invoke an action in a non-blocking fashion.
 
-.. literalinclude:: ../../examples/accumulators/accumulator.hpp
+.. literalinclude:: ../../../examples/accumulators/accumulator.hpp
    :lines: 59-65
 
 * **Asynchronous**: Futures, as demonstrated in :ref:`examples_fibonacci_local`,
@@ -214,7 +214,7 @@ There are a few different ways of invoking actions:
   asynchronous action invocation. Here's an example from the accumulator client
   class:
 
-.. literalinclude:: ../../examples/accumulators/accumulator.hpp
+.. literalinclude:: ../../../examples/accumulators/accumulator.hpp
    :lines: 115-121
 
 * **Synchronous**: To invoke an action in a fully synchronous manner, we can
@@ -222,7 +222,7 @@ There are a few different ways of invoking actions:
   immediately wait on it to be ready). Here's an example from the accumulator
   client class:
 
-.. literalinclude:: ../../examples/accumulators/accumulator.hpp
+.. literalinclude:: ../../../examples/accumulators/accumulator.hpp
    :lines: 97-103
 
 Note that ``this->get_id()`` references a data member of the

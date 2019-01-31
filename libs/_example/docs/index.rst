@@ -15,27 +15,28 @@ independent modules, with clear dependencies and no cycles.
 
 The tool `create_library_skeleton.py <https://github.com/STEllAR-GROUP/hpx/blob/master/libs/create_library_skeleton.py>`_
 can be used to generate a basic skeleton. The structure of this skeleton is as follows:
-    - `<lib_name>/`
-        - `Readme.md`
-        - `CMakeLists.txt`
-        - `cmake`
-        - `docs/`
-          - `index.rst`
-        - `examples/`
-            - `CMakeLists.txt`
-        - `include/`
-            - `hpx/`
-                - `<lib_name>`
-        - `src/`
-            - `CMakeLists.txt`
-        - `tests/`
-            - `CMakeLists.txt`
+
+- `<lib_name>/`
+   - `Readme.md`
+   - `CMakeLists.txt`
+      - `cmake`
+      - `docs/`
+         - `index.rst`
+      - `examples/`
+         - `CMakeLists.txt`
+      - `include/`
+         - `hpx/`
+            - `<lib_name>`
+      - `src/`
+         - `CMakeLists.txt`
+      - `tests/`
+         - `CMakeLists.txt`
             - `unit/`
-                - `CMakeLists.txt`
+               - `CMakeLists.txt`
             - `regressions/`
-                - `CMakeLists.txt`
+               - `CMakeLists.txt`
             - `performance/`
-                - `CMakeLists.txt`
+               - `CMakeLists.txt`
 
 A Readme should be always included which explains the basic purpose of the library
 and a link to the generated documentation.

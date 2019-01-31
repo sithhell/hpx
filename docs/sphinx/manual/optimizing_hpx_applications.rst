@@ -690,7 +690,7 @@ Performance Counters which support:
 
 Every full Performance Counter will implement a predefined interface:
 
-.. literalinclude:: ../../hpx/performance_counters/performance_counter.hpp
+.. literalinclude:: ../../../hpx/performance_counters/performance_counter.hpp
    :language: c++
 
 In order to implement a full Performance Counter you have to create an |hpx|
@@ -704,14 +704,14 @@ The base class is defined in the header file [hpx_link
 hpx/performance_counters/base_performance_counter.hpp..hpx/performance_counters/base_performance_counter.hpp]
 as:
 
-.. literalinclude:: ../../hpx/performance_counters/base_performance_counter.hpp
+.. literalinclude:: ../../../hpx/performance_counters/base_performance_counter.hpp
    :language: c++
 
 The single template parameter is expected to receive the type of the
 derived class implementing the Performance Counter. In the Sine example
 this looks like:
 
-.. literalinclude:: ../../examples/performance_counters/sine/server/sine.hpp
+.. literalinclude:: ../../../examples/performance_counters/sine/server/sine.hpp
    :language: c++
 
 i.e. the type ``sine_counter`` is derived from the base class passing the type

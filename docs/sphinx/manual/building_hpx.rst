@@ -292,7 +292,7 @@ favorite compiler with |hpx| visit |hpx_buildbot|_.
 
 .. note::
 
-   You need to build the following Boost libraries for |hpx|: 
+   You need to build the following Boost libraries for |hpx|:
    Boost.Filesystem, Boost.ProgramOptions, Boost.Regex, and Boost.System. The
    following are not needed by default, but are required in certain
    configurations: Boost.Chrono, Boost.DateTime, Boost.Log, Boost.LogSetup, and
@@ -1303,7 +1303,7 @@ How to install |hpx| on Fedora distributions
      sudo echo /opt/hpx/lib > /etc/ld.so.conf.d/hpx.conf
      sudo ldconfig
 
-.. _arch_installation
+.. _arch_installation:
 
 How to install |hpx| on Arch distributions
 ------------------------------------------
@@ -1358,6 +1358,6 @@ How to install |hpx| on Debian-based distributions
 The rest of the installation steps are same as provided with Fedora
 or Unix variants.
 
-.. include:: ../../generated/cmake_toolchains.rst
+.. include:: /manual/cmake_toolchains.rst
 
 .. include:: ../../generated/cmake_variables.rst

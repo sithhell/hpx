@@ -185,7 +185,7 @@ In order to create custom thread pools the resource partitioner needs to be set
 up before |hpx| is initialized by creating an instance of
 :cpp:class:`hpx::resource::partitioner`:
 
-.. literalinclude:: ../../examples/resource_partitioner/simplest_resource_partitioner_1.cpp
+.. literalinclude:: ../../../examples/resource_partitioner/simplest_resource_partitioner_1.cpp
    :start-after: //[body
    :end-before: //body]
 
@@ -213,7 +213,7 @@ pool. Below is an example of adding all processing units from the first NUMA
 domain to a custom thread pool, unless there is only one NUMA domain in which
 case we leave the first processing unit for the default thread pool:
 
-.. literalinclude:: ../../examples/resource_partitioner/simplest_resource_partitioner_2.cpp
+.. literalinclude:: ../../../examples/resource_partitioner/simplest_resource_partitioner_2.cpp
    :start-after: //[body
    :end-before: //body]
 

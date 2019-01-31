@@ -30,20 +30,20 @@ temperature of the current segment in the next timestep as shown by
 
 We parallelize this code over the following eight examples:
 
-* :download:`Example 1 <../../examples/1d_stencil/1d_stencil_1.cpp>`
-* :download:`Example 2 <../../examples/1d_stencil/1d_stencil_2.cpp>`
-* :download:`Example 3 <../../examples/1d_stencil/1d_stencil_3.cpp>`
-* :download:`Example 4 <../../examples/1d_stencil/1d_stencil_4.cpp>`
-* :download:`Example 5 <../../examples/1d_stencil/1d_stencil_5.cpp>`
-* :download:`Example 6 <../../examples/1d_stencil/1d_stencil_6.cpp>`
-* :download:`Example 7 <../../examples/1d_stencil/1d_stencil_7.cpp>`
-* :download:`Example 8 <../../examples/1d_stencil/1d_stencil_8.cpp>`
+* :download:`Example 1 <../../../examples/1d_stencil/1d_stencil_1.cpp>`
+* :download:`Example 2 <../../../examples/1d_stencil/1d_stencil_2.cpp>`
+* :download:`Example 3 <../../../examples/1d_stencil/1d_stencil_3.cpp>`
+* :download:`Example 4 <../../../examples/1d_stencil/1d_stencil_4.cpp>`
+* :download:`Example 5 <../../../examples/1d_stencil/1d_stencil_5.cpp>`
+* :download:`Example 6 <../../../examples/1d_stencil/1d_stencil_6.cpp>`
+* :download:`Example 7 <../../../examples/1d_stencil/1d_stencil_7.cpp>`
+* :download:`Example 8 <../../../examples/1d_stencil/1d_stencil_8.cpp>`
 
 The first example is straight serial code. In this code we instantiate a vector
 ``U`` which contains two vectors of doubles as seen in the structure
 ``stepper``.
 
-.. literalinclude:: ../../examples/1d_stencil/1d_stencil_1.cpp
+.. literalinclude:: ../../../examples/1d_stencil/1d_stencil_1.cpp
    :lines: 32-75
 
 Each element in the vector of doubles represents a single grid point. To
@@ -62,7 +62,7 @@ a variable with a future to a variable, a function with a future to a function,
 and adding a ``.get()`` at the point where a value is actually needed. The code
 below shows how this technique was applied to the ``struct stepper``.
 
-.. literalinclude:: ../../examples/1d_stencil/1d_stencil_2.cpp
+.. literalinclude:: ../../../examples/1d_stencil/1d_stencil_2.cpp
    :lines: 51-107
 
 In example 2, we re-define our partition type as a ``shared_future`` and, in
@@ -164,7 +164,7 @@ is accomplished in ``stepper::do_work()`` by passing the GID of the
 :term:`locality` where we wish to create the partition to the the partition
 constructor.
 
-.. literalinclude:: ../../examples/1d_stencil/1d_stencil_6.cpp
+.. literalinclude:: ../../../examples/1d_stencil/1d_stencil_6.cpp
    :lines: 328-329
 
 We distribute the partitions evenly based on the number of localities used,
@@ -186,7 +186,7 @@ we know that the data for the middle partition is local, we can overlap the work
 on the middle partition with that of the possibly remote call of ``get_data()``.
 This algorithmic change which was implemented in example 7 can be seen below:
 
-.. literalinclude:: ../../examples/1d_stencil/1d_stencil_7.cpp
+.. literalinclude:: ../../../examples/1d_stencil/1d_stencil_7.cpp
    :lines: 257-310
 
 Example 8 completes the futurization process and utilizes the full potential of

@@ -26,7 +26,7 @@ Setup
 =====
 
 The source code for this example can be found here: :download:`hello_world.cpp
-<../../examples/quickstart/hello_world.cpp>`.
+<../../../examples/quickstart/hello_world.cpp>`.
 
 To compile this program, go to your |hpx| build directory (see
 :ref:`hpx_build_system` for information on configuring and building |hpx|) and
@@ -72,7 +72,7 @@ Walkthrough
 Now that you have compiled and run the code, let's look at how the code works,
 beginning with ``main()``:
 
-.. literalinclude:: ../../examples/quickstart/hello_world.cpp
+.. literalinclude:: ../../../examples/quickstart/hello_world.cpp
    :lines: 130-156
 
 In this excerpt of the code we again see the use of futures. This time the
@@ -93,7 +93,7 @@ As in :ref:`examples_fibonacci` our futures are set using
 :cpp:func:`hpx::async\<>()`. The ``hello_world_foreman_action`` is declared
 here:
 
-.. literalinclude:: ../../examples/quickstart/hello_world.cpp
+.. literalinclude:: ../../../examples/quickstart/hello_world.cpp
    :lines: 123-125
 
 Another way of thinking about this wrapping technique is as follows: functions
@@ -103,7 +103,7 @@ locally or remotely (e.g. on another machine participating in the computation).
 Now it is time to look at the ``hello_world_foreman()`` function which was
 wrapped in the action above:
 
-.. literalinclude:: ../../examples/quickstart/hello_world.cpp
+.. literalinclude:: ../../../examples/quickstart/hello_world.cpp
    :lines: 66-119
 
 Now, before we discuss ``hello_world_foreman()``, let's talk about the
@@ -119,7 +119,7 @@ OS-thread prints out the statement, the future is marked as ready, and
 executing on the correct OS-thread, it returns a value of -1, which causes
 ``hello_world_foreman()`` to leave the OS-thread id in ``attendance``.
 
-.. literalinclude:: ../../examples/quickstart/hello_world.cpp
+.. literalinclude:: ../../../examples/quickstart/hello_world.cpp
    :lines: 37-61
 
 Because |hpx| features work stealing task schedulers, there is no way to

@@ -55,7 +55,7 @@ Setup
 
 The source code for this example can be found here:
 :download:`interest_calculator.cpp
-<../../examples/quickstart/interest_calculator.cpp>`.
+<../../../examples/quickstart/interest_calculator.cpp>`.
 
 To compile this program, go to your |hpx| build directory (see
 :ref:`hpx_build_system` for information on configuring and building |hpx|) and
@@ -87,12 +87,12 @@ Let us begin with main, here we can see that we again are using
 rate, compound period, and time. It is important to note that the units of time
 for ``cp`` and ``time`` must be the same.
 
-.. literalinclude:: ../../examples/quickstart/interest_calculator.cpp
+.. literalinclude:: ../../../examples/quickstart/interest_calculator.cpp
    :lines: 102-115
 
 Next we look at hpx_main.
 
-.. literalinclude:: ../../examples/quickstart/interest_calculator.cpp
+.. literalinclude:: ../../../examples/quickstart/interest_calculator.cpp
    :lines: 47-97
 
 Here we find our command line variables read in, the rate is converted from a
@@ -113,7 +113,7 @@ are ready. This loop continues for each compound period that must be calculated.
 To see how ``interest`` and ``principal`` are calculated in the loop let us look
 at ``calc_action`` and ``add_action``:
 
-.. literalinclude:: ../../examples/quickstart/interest_calculator.cpp
+.. literalinclude:: ../../../examples/quickstart/interest_calculator.cpp
    :lines: 31-42
 
 After the shared future dependencies have been defined in hpx_main, we see the

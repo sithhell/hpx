@@ -48,7 +48,7 @@ Setup
 =====
 
 The source code for this example can be found here:
-:download:`fibonacci_local.cpp <../../examples/quickstart/fibonacci_local.cpp>`.
+:download:`fibonacci_local.cpp <../../../examples/quickstart/fibonacci_local.cpp>`.
 
 To compile this program, go to your |hpx| build directory (see
 :ref:`hpx_build_system` for information on configuring and building |hpx|) and
@@ -115,7 +115,7 @@ to your program you would add them here using the instance of the Boost class
 calls ``hpx_main()`` after setting up |hpx|, which is where the logic of our
 program is encoded.
 
-.. literalinclude:: ../../examples/quickstart/fibonacci_local.cpp
+.. literalinclude:: ../../../examples/quickstart/fibonacci_local.cpp
    :start-after: //[main
    :end-before: //main]
 
@@ -126,7 +126,7 @@ timer (:cpp:class:`hpx::util::high_resolution_timer`) is set up to record the
 time it takes to do the computation, the ``fibonacci`` function is invoked
 synchronously, and the answer is printed out.
 
-.. literalinclude:: ../../examples/quickstart/fibonacci_local.cpp
+.. literalinclude:: ../../../examples/quickstart/fibonacci_local.cpp
    :start-after: //[hpx_main
    :end-before: //hpx_main]
 
@@ -134,7 +134,7 @@ The ``fibonacci`` function itself is synchronous as the work done inside is
 asynchronous. To understand what is happening we have to look inside the
 ``fibonacci`` function:
 
-.. literalinclude:: ../../examples/quickstart/fibonacci_local.cpp
+.. literalinclude:: ../../../examples/quickstart/fibonacci_local.cpp
    :start-after: //[fibonacci
    :end-before: //fibonacci]
 

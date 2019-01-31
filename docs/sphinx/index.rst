@@ -87,7 +87,7 @@ What's so special about |hpx|?
 
 .. toctree::
    :caption: Reference
-   :maxdepth: 2
+   :maxdepth: 1
 
    api
 

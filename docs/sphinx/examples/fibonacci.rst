@@ -23,7 +23,7 @@ Setup
 =====
 
 The source code for this example can be found here:
-:download:`fibonacci.cpp <../../examples/quickstart/fibonacci.cpp>`.
+:download:`fibonacci.cpp <../../../examples/quickstart/fibonacci.cpp>`.
 
 To compile this program, go to your |hpx| build directory (see
 :ref:`hpx_build_system` for information on configuring and building |hpx|) and
@@ -69,7 +69,7 @@ Walkthrough
 The code needed to initialize the |hpx| runtime is the same as in the
 :ref:`previous example <examples_fibonacci_local>`:
 
-.. literalinclude:: ../../examples/quickstart/fibonacci.cpp
+.. literalinclude:: ../../../examples/quickstart/fibonacci.cpp
    :lines: 77-91
 
 The :cpp:func:`hpx::init` function in ``main()`` starts the runtime system, and
@@ -79,7 +79,7 @@ invokes ``hpx_main()`` as the first |hpx|-thread. The command line option
 takes to do the computation, the ``fibonacci`` :term:`action` is invoked
 synchronously, and the answer is printed out.
 
-.. literalinclude:: ../../examples/quickstart/fibonacci.cpp
+.. literalinclude:: ../../../examples/quickstart/fibonacci.cpp
    :lines: 54-72
 
 Upon a closer look we see that we've created a ``std::uint64_t`` to store the
@@ -96,7 +96,7 @@ currently on, so we use :cpp:func:`hpx::find_here` that we wish to calculate. To
 further understand this we turn to the code to find where ``fibonacci_action``
 was defined:
 
-.. literalinclude:: ../../examples/quickstart/fibonacci.cpp
+.. literalinclude:: ../../../examples/quickstart/fibonacci.cpp
    :lines: 20-25
 
 A plain :term:`action` is the most basic form of :term:`action`. Plain
@@ -114,7 +114,7 @@ but created asynchronous work, then returns a ``std::uint64_t`` representing the
 result of the function ``fibonacci()``. Now, let's look at the function
 ``fibonacci()``:
 
-.. literalinclude:: ../../examples/quickstart/fibonacci.cpp
+.. literalinclude:: ../../../examples/quickstart/fibonacci.cpp
    :lines: 30-49
 
 This block of code is much more straightforward and should look familiar from

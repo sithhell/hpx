@@ -14,6 +14,10 @@ if(HPX_WITH_NETWORKING)
     verbs
     mpi
     tcp)
+  add_subdirectory(libfabric)
+  add_subdirectory(verbs)
+  add_subdirectory(mpi)
+  add_subdirectory(tcp)
 endif()
 
 set(HPX_STATIC_PARCELPORT_PLUGINS "" CACHE INTERNAL "" FORCE)
@@ -86,7 +90,6 @@ endmacro()
 
 foreach(type ${parcelport_plugins})
   add_hpx_pseudo_target(plugins.parcelport.${type})
-  add_subdirectory(${type})
   add_hpx_pseudo_dependencies(plugins.parcelport plugins.parcelport.${type})
 endforeach()
 

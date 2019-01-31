@@ -10,9 +10,11 @@ set(plugin_categories
 
 foreach(category ${plugin_categories})
   add_hpx_pseudo_target(plugins.${category})
-  add_subdirectory(${category})
   add_hpx_pseudo_dependencies(plugins plugins.${category})
 endforeach()
+add_subdirectory(binary_filter)
+add_subdirectory(parcel)
+add_subdirectory(parcelport)
 
 macro(add_plugin_modules)
   add_binary_filter_modules()

@@ -22,7 +22,7 @@ operation will be transferred back to the original invocation :term:`locality`,
 where it is rethrown during synchronization with the calling thread.
 
 The source code for this example can be found here:
-:download:`error_handling.cpp <../../examples/quickstart/error_handling.cpp>`.
+:download:`error_handling.cpp <../../../examples/quickstart/error_handling.cpp>`.
 
 .. _exceptions:
 
@@ -32,7 +32,7 @@ Working with exceptions
 For the following description we assume that the function ``raise_exception()``
 is executed by invoking the plain action ``raise_exception_type``.
 
-.. literalinclude:: ../../examples/quickstart/error_handling.cpp
+.. literalinclude:: ../../../examples/quickstart/error_handling.cpp
    :language: c++
    :lines: 13-17
 
@@ -47,7 +47,7 @@ the (asynchronous) invocation site. It will be rethrown in this context when the
 calling thread tries to wait for the result of the action by invoking either
 ``future<>::get()`` or the synchronous action invocation wrapper as shown here:
 
-.. literalinclude:: ../../examples/quickstart/error_handling.cpp
+.. literalinclude:: ../../../examples/quickstart/error_handling.cpp
    :language: c++
    :lines: 27-42
 
@@ -69,7 +69,7 @@ diagnostics, or to output those using different formatting. For this case, |hpx|
 exposes a set of lower level functions as demonstrated in the following code
 snippet:
 
-.. literalinclude:: ../../examples/quickstart/error_handling.cpp
+.. literalinclude:: ../../../examples/quickstart/error_handling.cpp
    :language: c++
    :lines: 47-72
 
@@ -87,7 +87,7 @@ the error condition will be returned in that :cpp:class:`hpx::error_code`
 instance. The following example demonstrates extracting the full diagnostic
 information without exception handling:
 
-.. literalinclude:: ../../examples/quickstart/error_handling.cpp
+.. literalinclude:: ../../../examples/quickstart/error_handling.cpp
    :language: c++
    :lines: 79-100
 
@@ -109,7 +109,7 @@ output those using different formatting. For this case, |hpx| exposes a set of
 lower level functions usable with error codes as demonstrated in the following
 code snippet:
 
-.. literalinclude:: ../../examples/quickstart/error_handling.cpp
+.. literalinclude:: ../../../examples/quickstart/error_handling.cpp
    :language: c++
    :lines: 107-139
 
@@ -133,7 +133,7 @@ error at the point where it happened as this might impose too much overhead for
 simple scenarios. In this case, |hpx| provides a lightweight error code facility
 which will hold the error code only. The following snippet demonstrates its use:
 
-.. literalinclude:: ../../examples/quickstart/error_handling.cpp
+.. literalinclude:: ../../../examples/quickstart/error_handling.cpp
    :language: c++
    :lines: 146-166
 
@@ -194,7 +194,7 @@ function as long as they are the first container passing into the function (In
 the case where a launch policy is used, the ``checkpoint`` will immediately
 follow the launch policy). An example of these features can be found below:
 
-.. literalinclude:: ../../tests/unit/util/checkpoint.cpp
+.. literalinclude:: ../../../tests/unit/util/checkpoint.cpp
    :language: c++
    :lines: 27-38
 
@@ -205,7 +205,7 @@ into the containers it is provided. It is important to remember that the
 containers must be ordered in the same way they were placed into the
 ``checkpoint``. For clarity see the example below:
 
-.. literalinclude:: ../../tests/unit/util/checkpoint.cpp
+.. literalinclude:: ../../../tests/unit/util/checkpoint.cpp
    :language: c++
    :lines: 41-49
 
@@ -219,7 +219,7 @@ We have created the two stream overloads
 out of and into ``checkpoint``. You can see an
 example of the overloads in use below:
 
-.. literalinclude:: ../../tests/unit/util/checkpoint.cpp
+.. literalinclude:: ../../../tests/unit/util/checkpoint.cpp
    :language: c++
    :lines: 176-186
 
@@ -246,7 +246,7 @@ Users may also move the data into and out of a ``checkpoint`` using the exposed
 ``.begin()`` and ``.end()`` iterators. An example of this use case is
 illustrated below.
 
-.. literalinclude:: ../../tests/unit/util/checkpoint.cpp
+.. literalinclude:: ../../../tests/unit/util/checkpoint.cpp
    :language: c++
    :lines: 129-150
 
@@ -273,7 +273,7 @@ In order to use either ``hpx::cout`` or ``hpx::cerr`` application codes need to
 ``#include <hpx/include/iostreams.hpp>``. For an example, please see the
 simplest possible 'Hello world' program as included as an example with |hpx|:
 
-.. literalinclude:: ../../examples/quickstart/simplest_hello_world_1.cpp
+.. literalinclude:: ../../../examples/quickstart/simplest_hello_world_1.cpp
    :language: c++
 
 Additionally those applications need to link with the iostreams component. When

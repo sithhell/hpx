@@ -8,11 +8,11 @@ set(parcel_plugins)
 if(HPX_WITH_NETWORKING)
   set(parcel_plugins ${parcel_plugins}
     coalescing)
+  add_subdirectory(coalescing)
 endif()
 
 foreach(type ${parcel_plugins})
   add_hpx_pseudo_target(plugins.parcel.${type})
-  add_subdirectory(${type})
   add_hpx_pseudo_dependencies(plugins.parcel plugins.parcel.${type})
 endforeach()
 

@@ -193,7 +193,7 @@ Once you have your project set up change the line containing
 
 and add the following to your ``main.cpp``:
 
-.. literalinclude:: ../examples/quickstart/simplest_hello_world_1.cpp
+.. literalinclude:: ../../examples/quickstart/simplest_hello_world_1.cpp
    :language: c++
    :start-after: //[simplest_hello_world_1_getting_started
    :end-before: //]
@@ -221,7 +221,7 @@ program now you should see the familiar ``Hello World!``:
    runtime. In that case you start the |hpx| runtime explicitly by calling
    ``hpx::init``:
 
-   .. literalinclude:: ../examples/quickstart/simplest_hello_world_2.cpp
+   .. literalinclude:: ../../examples/quickstart/simplest_hello_world_2.cpp
       :language: c++
 
    You can also use :cpp:func:`hpx::start` and :cpp:func:`hpx::stop` for a
@@ -282,7 +282,7 @@ programs:
 The following example is a collection of the most commonly used functionality in
 |hpx|:
 
-.. literalinclude:: ../examples/quickstart/potpourri.cpp
+.. literalinclude:: ../../examples/quickstart/potpourri.cpp
    :language: c++
    :lines: 6-
 
