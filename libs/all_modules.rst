@@ -41,6 +41,7 @@ All modules
    /libs/plugin/docs/index.rst
    /libs/preprocessor/docs/index.rst
    /libs/program_options/docs/index.rst
+   /libs/properties/docs/index.rst
    /libs/resiliency/docs/index.rst
    /libs/segmented_algorithms/docs/index.rst
    /libs/serialization/docs/index.rst

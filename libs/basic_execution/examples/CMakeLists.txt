@@ -9,6 +9,35 @@ if (HPX_WITH_EXAMPLES)
   add_hpx_pseudo_dependencies(examples.modules examples.modules.basic_execution)
   if (HPX_WITH_TESTS AND HPX_WITH_TESTS_EXAMPLES AND HPX_BASIC_EXECUTION_WITH_TESTS)
     add_hpx_pseudo_target(tests.examples.modules.basic_execution)
-    add_hpx_pseudo_dependencies(tests.examples.modules tests.examples.modules.basic_execution)
+    add_hpx_pseudo_dependencies(tests.examples.modules
+        tests.examples.modules.basic_execution)
   endif()
+
+  set(examples
+      basic_future
+  )
+  foreach(example ${examples})
+    set(sources
+      ${example}.cpp)
+
+    source_group("Source Files" FILES ${sources})
+
+    # add example executable
+    add_hpx_executable(${example}
+                       SOURCES ${sources}
+                       NOLIBS
+                       DEPENDENCIES
+                         hpx_basic_execution
+                         ${BOOST_UNDERLYING_THREAD_LIBRARY}
+                       EXCLUDE_FROM_ALL
+                       FOLDER "Examples/Modules/BasicExecution")
+
+    add_hpx_example_target_dependencies("modules.basic_execution" ${example})
+    target_compile_definitions(${example} PRIVATE -DHPX_MODULE_STATIC_LINKING)
+
+    if(HPX_WITH_TESTS AND HPX_WITH_TESTS_EXAMPLES)
+      add_hpx_example_test("modules.basic_execution" ${example})
+    endif()
+
+  endforeach()
 endif()

@@ -69,7 +69,8 @@ namespace hpx { namespace util {
             HPX_CONSTEXPR HPX_HOST_DEVICE typename std::enable_if<
                 std::is_base_of<C, typename std::decay<T0>::type>::value,
                 util::invoke_result<T C::*, T0, Ts...>>::type::type
-            operator()(T0&& v0, Ts&&... vs) const
+            operator()(T0&& v0, Ts&&... vs) const noexcept(
+                noexcept((std::forward<T0>(v0).*f)(std::forward<Ts>(vs)...)))
             {
                 return (std::forward<T0>(v0).*f)(std::forward<Ts>(vs)...);
             }
@@ -79,7 +80,8 @@ namespace hpx { namespace util {
             HPX_CONSTEXPR HPX_HOST_DEVICE typename std::enable_if<
                 !std::is_base_of<C, typename std::decay<T0>::type>::value,
                 util::invoke_result<T C::*, T0, Ts...>>::type::type
-            operator()(T0&& v0, Ts&&... vs) const
+            operator()(T0&& v0, Ts&&... vs) const noexcept(
+                noexcept(((*std::forward<T0>(v0)).*f)(std::forward<Ts>(vs)...)))
             {
                 return ((*std::forward<T0>(v0)).*f)(std::forward<Ts>(vs)...);
             }
@@ -143,7 +145,8 @@ namespace hpx { namespace util {
     /// \note This function is similar to `std::invoke` (C++17)
     template <typename F, typename... Ts>
     HPX_CONSTEXPR HPX_HOST_DEVICE typename util::invoke_result<F, Ts...>::type
-    invoke(F&& f, Ts&&... vs)
+    invoke(F&& f, Ts&&... vs) noexcept(
+        noexcept(HPX_INVOKE(std::forward<F>(f), std::forward<Ts>(vs)...)))
     {
         return HPX_INVOKE(std::forward<F>(f), std::forward<Ts>(vs)...);
     }

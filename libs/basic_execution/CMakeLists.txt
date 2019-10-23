@@ -14,6 +14,19 @@ set(basic_execution_headers
   hpx/basic_execution/register_locks.hpp
   hpx/basic_execution/resource_base.hpp
   hpx/basic_execution/this_thread.hpp
+  hpx/execution.hpp
+  hpx/execution/exceptions.hpp
+  hpx/execution/execute.hpp
+  hpx/execution/executor.hpp
+  hpx/execution/receiver.hpp
+  hpx/execution/schedule.hpp
+  hpx/execution/scheduler.hpp
+  hpx/execution/sender.hpp
+  hpx/execution/set_done.hpp
+  hpx/execution/set_error.hpp
+  hpx/execution/set_value.hpp
+  hpx/execution/sink_receiver.hpp
+  hpx/execution/submit.hpp
 )
 
 set(basic_execution_compat_headers
@@ -35,8 +48,11 @@ add_hpx_module(basic_execution
   DEPENDENCIES
     hpx_assertion
     hpx_config
+    hpx_concepts
     hpx_errors
     hpx_format
+    hpx_functional
+    hpx_properties
     hpx_timing
   CMAKE_SUBDIRS examples tests
 )

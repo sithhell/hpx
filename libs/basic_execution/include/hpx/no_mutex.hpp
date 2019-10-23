@@ -4,21 +4,21 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef HPX_LCOS_LOCAL_NO_MUTEX_HPP
-#define HPX_LCOS_LOCAL_NO_MUTEX_HPP
+#ifndef HPX_NO_MUTEX_HPP
+#define HPX_NO_MUTEX_HPP
 
-#include <hpx/config.hpp>
-
-namespace hpx { namespace lcos { namespace local
-{
+namespace hpx {
     struct no_mutex
     {
         void lock() {}
 
-        bool try_lock() { return true; };
+        bool try_lock()
+        {
+            return true;
+        };
 
         void unlock() {}
     };
-}}}
+}    // namespace hpx
 
-#endif /*HPX_LCOS_LOCAL_NO_MUTEX_HPP*/
+#endif
