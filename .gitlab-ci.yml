@@ -6,6 +6,7 @@
 variables:
     GIT_STRATEGY: none
 
+# ...
 # The configuration of the build is split over multiple files to more clearly
 # arrange the different configurations. The included files are supposed to
 # expose hidden keys that can be extended.
