@@ -12,23 +12,6 @@ variables:
 # NOTE: gitlab doesn't support recursive includes yet, so we flatten everything
 # here
 
-checkout:
-    image: stellargroup/build_env:ubuntu
-    stage: checkout
-    variables:
-        GIT_STRATEGY: fetch
-        GIT_DEPTH: "1"
-    script:
-        # Moving checked out files to seperate directory ...
-        - cd ..
-        - mv hpx tmp
-        - mkdir hpx
-        - mv tmp hpx/source;
-        - cp hpx/source/.clang-tidy hpx/
-    artifacts:
-        paths:
-            - source
-
 include:
     - .gitlab-ci/stages.yml
     - .gitlab-ci/cmake.yml
