@@ -1,0 +1,36 @@
+name: HPX CI
+
+on:
+    push:
+        branches:
+            - master
+            - release
+    pull_request:
+        branches:
+            - '*'
+
+jobs:
+    build:
+        strategy:
+            matrix:
+                build_type: [Debug, Release]
+                compiler: [g++-7, clang++-6.0]
+                #boost: [1.70, 1.70]
+                #malloc: [system, jemalloc, tcmalloc]
+                #apex: [On, Off]
+                networking: [On, Off]
+                #cuda: [On, Off]
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+        - name: CMake
+          run: cmake -S . -B build
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+            -DCMAKE_CXX_COMPILER=${{ matrix.compiler }}
+            -DCMAKE_C_COMPILER=gcc-7
+            -DHPX_WITH_MALLOC=system
+            -DHPX_WITH_NETWORKING=${{ matrix.networking }}
+        - name: Build Core
+          run: |
+              cmake --build build --target core
